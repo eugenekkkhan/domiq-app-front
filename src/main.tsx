@@ -5,15 +5,8 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import { sdkInit } from "./utils/sdkInitialisation.ts";
 
-import { init, initData } from "@telegram-apps/sdk-react";
-// import { BackButton } from "./BackButton.js";
-
-// Initialize the package.
-init();
-
-// Mount the Back Button, so we will work with
-// the actual component properties.
-initData.restore();
-
-createRoot(document.getElementById("root")!).render(<RouterComponent/>);
+const root = createRoot(document.getElementById("root")!);
+sdkInit();
+root.render(<RouterComponent />);
