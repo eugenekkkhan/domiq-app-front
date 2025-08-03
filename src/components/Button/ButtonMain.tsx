@@ -1,6 +1,7 @@
 import type { SvgIconTypeMap } from "@mui/material/SvgIcon";
 import type { OverridableComponent } from "@mui/material/OverridableComponent";
 import type { ComponentProps } from "react";
+import { themeParams } from "@telegram-apps/sdk";
 
 interface Props extends ComponentProps<"button"> {
   color: string;
@@ -17,7 +18,7 @@ const ButtonMain = ({ color, text, Icon, ...props }: Props) => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        background: "white",
+        background: themeParams.sectionBackgroundColor(),
         color: color,
         border: "none",
         cursor: "pointer",
