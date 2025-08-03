@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Image from "../../assets/image 8.png";
 import { themeParams } from "@telegram-apps/sdk";
+import { NavLink } from "react-router";
 
 const makeDarker = (color: string, darkOffset: number) => {
   let newColor: string = "#";
@@ -31,40 +32,42 @@ const Banner = () => {
     return () => window.removeEventListener("resize", eventHandler);
   }, []);
   return (
-    <div
-      style={{
-        height: `${164 - 32}px`,
-        background: `radial-gradient(circle at 90% 135%, ${themeParams.buttonColor()}, ${makeDarker(
-          themeParams.buttonColor() as string,
-          100
-        )} 55%)`,
-        borderRadius: "26px",
-        padding: "16px 20px",
-        color: themeParams.buttonTextColor(),
-        display: "flex",
-        position: "relative",
-      }}
-    >
-      <p
+    <NavLink to="/videos">
+      <div
         style={{
-          width: "160px",
-          fontSize: `${coefficient}em`,
+          height: `${164 - 32}px`,
+          background: `radial-gradient(circle at 90% 135%, ${themeParams.buttonColor()}, ${makeDarker(
+            themeParams.buttonColor() as string,
+            100
+          )} 55%)`,
+          borderRadius: "26px",
+          padding: "16px 20px",
+          color: themeParams.buttonTextColor(),
+          display: "flex",
+          position: "relative",
         }}
       >
-        Видеоинструкция по подключению и работе с камерой
-      </p>
-      <img
-        src={Image}
-        alt="image"
-        style={{
-          right: "0px",
-          bottom: "0",
-          position: "absolute",
-          scale: coefficient,
-          transformOrigin: "bottom right",
-        }}
-      />
-    </div>
+        <p
+          style={{
+            width: "160px",
+            fontSize: `${coefficient}em`,
+          }}
+        >
+          Видеоинструкция по подключению и работе с камерой
+        </p>
+        <img
+          src={Image}
+          alt="image"
+          style={{
+            right: "0px",
+            bottom: "0",
+            position: "absolute",
+            scale: coefficient,
+            transformOrigin: "bottom right",
+          }}
+        />
+      </div>
+    </NavLink>
   );
 };
 
