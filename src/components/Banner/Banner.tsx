@@ -1,5 +1,22 @@
 import { useEffect, useState } from "react";
 import Image from "../../assets/image 8.png";
+import { themeParams } from "@telegram-apps/sdk";
+
+const makeDarker = (color: string, darkOffset: number) => {
+  let newColor: string = "#";
+  for (let i = 1; i <= 5; i = i + 2) {
+    console.log(color.slice(i, i + 2));
+    const additionalPart = (
+      parseInt(color.slice(i, i + 2), 16) - darkOffset > 0
+        ? parseInt(color.slice(i, i + 2), 16) - darkOffset
+        : 0
+    ).toString(16);
+
+    newColor += (additionalPart.length === 1 ? "0" : "") + additionalPart;
+  }
+  console.log(color);
+  return newColor;
+};
 
 const Banner = () => {
   const [coefficient, setCoefficient] = useState(1);
@@ -17,10 +34,13 @@ const Banner = () => {
     <div
       style={{
         height: `${164 - 32}px`,
-        background: "radial-gradient(circle at 90% 135%,#A2845E,#312A28 55%)",
+        background: `radial-gradient(circle at 90% 135%, ${themeParams.buttonColor()}, ${makeDarker(
+          themeParams.buttonColor() as string,
+          100
+        )} 55%)`,
         borderRadius: "26px",
         padding: "16px 20px",
-        color: "white",
+        color: themeParams.buttonTextColor(),
         display: "flex",
         position: "relative",
       }}
