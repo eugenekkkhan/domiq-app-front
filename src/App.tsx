@@ -25,7 +25,6 @@ const App = () => {
           location.href = "https://t.me/D0M_IQ";
         }}
       />
-      {}
     </div>
   );
 };
