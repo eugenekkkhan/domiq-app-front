@@ -6,10 +6,11 @@ import { getCookie } from "./utils";
 import ConnectionProblems from "./pages/ConnectionProblems";
 import Faq from "./pages/Faq";
 import Features from "./pages/Features";
+import useCustomTheme from "./customHooks/useCustomTheme";
 
 const RouterComponent = () => {
   const isAuthenticated = getCookie("token");
-
+  useCustomTheme();
   return (
     <BrowserRouter>
       <Routes>
