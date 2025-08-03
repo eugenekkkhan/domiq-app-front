@@ -2,6 +2,7 @@ import type { OverridableComponent } from "@mui/material/OverridableComponent";
 import type { SvgIconTypeMap } from "@mui/material/SvgIcon";
 import KeyboardArrowRightRoundedIcon from "@mui/icons-material/KeyboardArrowRightRounded";
 import { NavLink } from "react-router";
+import { themeParams } from "@telegram-apps/sdk";
 
 const MainMenuElement = ({
   Icon,
@@ -32,7 +33,13 @@ const MainMenuElement = ({
             position: "relative",
           }}
         >
-          <Icon style={{ color: "#A2845E", width: "22px", height: "22px" }} />
+          <Icon
+            style={{
+              color: themeParams.buttonColor(),
+              width: "22px",
+              height: "22px",
+            }}
+          />
           <p>{text}</p>
         </div>
         {!isLast && (
@@ -42,13 +49,15 @@ const MainMenuElement = ({
               position: "absolute",
               bottom: "0",
               right: "-16px",
-              backgroundColor: "#C4C4C7",
-              width: "calc(100% - 16px)",
+              backgroundColor: themeParams.sectionSeparatorColor(),
+              width: "calc(100% - 18px)",
               height: "0.33px",
             }}
           ></span>
         )}
-        <KeyboardArrowRightRoundedIcon style={{ color: "#C4C4C7" }} />
+        <KeyboardArrowRightRoundedIcon
+          style={{ color: themeParams.sectionSeparatorColor() }}
+        />
       </div>
     </NavLink>
   );
