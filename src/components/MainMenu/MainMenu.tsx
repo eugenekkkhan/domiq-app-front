@@ -10,7 +10,6 @@ const MainMenu = () => {
       style={{
         borderRadius: "26px",
         padding: "0px 16px",
-        color: themeParams.textColor(),
         background: themeParams.sectionBackgroundColor(),
         display: "flex",
         flexDirection: "column",

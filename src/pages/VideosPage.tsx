@@ -1,9 +1,8 @@
-import React from 'react'
+import { useBackButton } from "../customHooks/useBackButton";
 
 const Videos = () => {
-  return (
-    <div>Videos</div>
-  )
-}
+  useBackButton();
+  return <div>Videos</div>;
+};
 
-export default Videos
+export default Videos;
