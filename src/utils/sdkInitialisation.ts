@@ -12,7 +12,6 @@ import {
 
 export const sdkInit = async () => {
   if (!(await isTMA("complete"))) {
-    console.log("penis")
     const noInsets = {
       left: 0,
       top: 0,
@@ -20,20 +19,40 @@ export const sdkInit = async () => {
       right: 0,
     } as const;
     const themeParams = {
-      accent_text_color: "#6ab2f2",
-      bg_color: "#17212b",
-      button_color: "#5288c1",
+      accent_text_color: "#007aff",
+      section_header_text_color: "#6d6d72",
+      destructive_text_color: "#ff3b30",
+      hint_color: "#8e8e93",
+      button_color: "#007aff",
+      secondary_bg_color: "#efeff4",
+      bottom_bar_bg_color: "#f2f2f2",
+      text_color: "#000000",
+      header_bg_color: "#f8f8f8",
+      subtitle_text_color: "#8e8e93",
+      section_separator_color: "#c8c7cc",
+      section_bg_color: "#ffffff",
+      link_color: "#007aff",
+      bg_color: "#ffffff",
       button_text_color: "#ffffff",
-      destructive_text_color: "#ec3942",
-      header_bg_color: "#17212b",
-      hint_color: "#708499",
-      link_color: "#6ab3f3",
-      secondary_bg_color: "#232e3c",
-      section_bg_color: "#17212b",
-      section_header_text_color: "#6ab3f3",
-      subtitle_text_color: "#708499",
-      text_color: "#f5f5f5",
     } as const;
+
+    // const themeParams = {
+    //   accent_text_color: "#2ea6ff",
+    //   section_header_text_color: "#83898e",
+    //   destructive_text_color: "#ff6767",
+    //   hint_color: "#dbf5ff",
+    //   button_color: "#2ea6ff",
+    //   secondary_bg_color: "#18222d",
+    //   bottom_bar_bg_color: "#21303f",
+    //   text_color: "#ffffff",
+    //   header_bg_color: "#21303f",
+    //   subtitle_text_color: "#dbf5ff",
+    //   section_separator_color: "#384656",
+    //   section_bg_color: "#21303f",
+    //   link_color: "#2ea6ff",
+    //   bg_color: "#18222d",
+    //   button_text_color: "#ffffff",
+    // } as const;
 
     mockTelegramEnv({
       launchParams: {
