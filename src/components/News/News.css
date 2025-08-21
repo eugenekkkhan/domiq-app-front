@@ -1,0 +1,17 @@
+.slick-slide > div {
+  margin: 0 -14px; /* Add margin to individual slide wrappers */
+}
+
+.slick-dots li button {
+  margin: 0px 0px !important;
+  padding: 0 !important;
+}
+
+.slick-dots li {
+  width: 8px !important;
+}
+
+.slick-dots li button:before {
+  font-size: 8px !important;
+  width: 8px !important;
+}

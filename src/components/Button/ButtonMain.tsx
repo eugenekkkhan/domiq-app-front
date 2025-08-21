@@ -6,10 +6,11 @@ import { themeParams } from "@telegram-apps/sdk";
 interface Props extends ComponentProps<"button"> {
   color: string;
   text: string;
+  style: React.CSSProperties;
   Icon: OverridableComponent<SvgIconTypeMap<{}, "svg">>;
 }
 
-const ButtonMain = ({ color, text, Icon, ...props }: Props) => {
+const ButtonMain = ({ color, text, Icon, style, ...props }: Props) => {
   return (
     <button
       style={{
@@ -22,6 +23,7 @@ const ButtonMain = ({ color, text, Icon, ...props }: Props) => {
         color: color,
         border: "none",
         cursor: "pointer",
+        ...style
       }}
       {...props}
     >

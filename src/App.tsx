@@ -3,6 +3,7 @@ import MainMenu from "./components/MainMenu/MainMenu";
 import ButtonMain from "./components/Button/ButtonMain";
 import ChatBubbleRoundedIcon from "@mui/icons-material/ChatBubbleRounded";
 import { useCloseButton } from "./customHooks/useCloseButton";
+import NewsComponent from "./components/News/NewsComponent";
 
 const App = () => {
   useCloseButton();
@@ -15,6 +16,7 @@ const App = () => {
         gap: "16px",
       }}
     >
+      <NewsComponent />
       <Banner />
       <MainMenu />
       <ButtonMain
@@ -23,6 +25,13 @@ const App = () => {
         color="#34C759"
         onClick={() => {
           location.href = "https://t.me/D0M_IQ";
+        }}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "24px",
+          gap: "8px",
         }}
       />
     </div>

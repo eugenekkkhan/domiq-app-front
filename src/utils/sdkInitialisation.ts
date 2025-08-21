@@ -37,21 +37,21 @@ export const sdkInit = async () => {
     } as const;
 
     // const themeParams = {
-    //   accent_text_color: "#2ea6ff",
-    //   section_header_text_color: "#83898e",
     //   destructive_text_color: "#ff6767",
-    //   hint_color: "#dbf5ff",
-    //   button_color: "#2ea6ff",
+    //   section_separator_color: "#435044",
+    //   bottom_bar_bg_color: "#2e3b2f",
     //   secondary_bg_color: "#18222d",
-    //   bottom_bar_bg_color: "#21303f",
-    //   text_color: "#ffffff",
-    //   header_bg_color: "#21303f",
-    //   subtitle_text_color: "#dbf5ff",
-    //   section_separator_color: "#384656",
+    //   hint_color: "#deecdd",
+    //   link_color: "#97ec97",
+    //   button_text_color: "#000000",
+    //   section_header_text_color: "#7f847f",
+    //   accent_text_color: "#97ec97",
+    //   bg_color: "#212a22",
+    //   header_bg_color: "#2e3b2f",
     //   section_bg_color: "#21303f",
-    //   link_color: "#2ea6ff",
-    //   bg_color: "#18222d",
-    //   button_text_color: "#ffffff",
+    //   button_color: "#97ec97",
+    //   text_color: "#ffffff",
+    //   subtitle_text_color: "#deecdd",
     // } as const;
 
     mockTelegramEnv({

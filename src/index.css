@@ -4,6 +4,12 @@
   src: url("./assets/fonts/SF-Pro-Text-Regular.woff");
 }
 
+@font-face {
+  font-family: "SF Pro";
+  font-weight: 700;
+  src: url("./assets/fonts/SF-Pro-Display-Bold.woff");
+}
+
 :root {
   font-family: "SF Pro", serif;
   color-scheme: light dark;
@@ -15,7 +21,9 @@
 
 body {
   margin: 20px;
-  background: #F2F2F7;
+  max-width: 100%;
+  overflow-x: hidden;
+  touch-action: pan-y;
 }
 
 p {
@@ -28,4 +36,11 @@ p {
 a {
   text-decoration: none;
   color: inherit;
+}
+
+h1 {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 34px;
+  letter-spacing: 0.38px;
 }

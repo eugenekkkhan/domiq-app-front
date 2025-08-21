@@ -1,6 +1,6 @@
 import React from "react";
 import { auth } from "./queries";
-import { setCookie } from "./utils";
+import { setCookie } from "./utils/utils";
 
 const AdminAuth = () => {
   const [form, setForm] = React.useState({

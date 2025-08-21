@@ -5,16 +5,17 @@ import { NavLink } from "react-router";
 import { themeParams } from "@telegram-apps/sdk";
 
 const MainMenuElement = ({
-  Icon,
   text,
-  isLast = false,
   link,
+  Icon = null,
+  isLast = false,
 }: {
-  Icon: OverridableComponent<SvgIconTypeMap<{}, "svg">>;
   text: string;
   isLast?: boolean;
+  Icon?: OverridableComponent<SvgIconTypeMap<{}, "svg">> | null;
   link: string;
 }) => {
+  console.log(link);
   return (
     <NavLink to={link}>
       <div
@@ -33,13 +34,15 @@ const MainMenuElement = ({
             position: "relative",
           }}
         >
-          <Icon
-            style={{
-              color: themeParams.buttonColor(),
-              width: "22px",
-              height: "22px",
-            }}
-          />
+          {Icon && (
+            <Icon
+              style={{
+                color: themeParams.buttonColor(),
+                width: "22px",
+                height: "22px",
+              }}
+            />
+          )}
           <p>{text}</p>
         </div>
         {!isLast && (
@@ -50,7 +53,7 @@ const MainMenuElement = ({
               bottom: "0",
               right: "-16px",
               backgroundColor: themeParams.sectionSeparatorColor(),
-              width: "calc(100% - 18px)",
+              width: `calc(100% ${Icon ? "- 18" : "+ 14"}px)`,
               height: "0.33px",
             }}
           ></span>

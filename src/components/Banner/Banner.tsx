@@ -6,7 +6,6 @@ import { NavLink } from "react-router";
 const makeDarker = (color: string, darkOffset: number) => {
   let newColor: string = "#";
   for (let i = 1; i <= 5; i = i + 2) {
-    console.log(color.slice(i, i + 2));
     const additionalPart = (
       parseInt(color.slice(i, i + 2), 16) - darkOffset > 0
         ? parseInt(color.slice(i, i + 2), 16) - darkOffset
@@ -15,7 +14,6 @@ const makeDarker = (color: string, darkOffset: number) => {
 
     newColor += (additionalPart.length === 1 ? "0" : "") + additionalPart;
   }
-  console.log(color);
   return newColor;
 };
 

@@ -1,8 +1,9 @@
+import VideoSection from "../components/VideoSection/VideoSection";
 import { useBackButton } from "../customHooks/useBackButton";
 
 const Videos = () => {
   useBackButton();
-  return <div>Videos</div>;
+  return <VideoSection />;
 };
 
 export default Videos;

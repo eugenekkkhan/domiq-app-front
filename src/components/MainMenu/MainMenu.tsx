@@ -3,8 +3,31 @@ import HelpOutlineRoundedIcon from "@mui/icons-material/HelpOutlineRounded";
 import ErrorOutlineRoundedIcon from "@mui/icons-material/ErrorOutlineRounded";
 import StarBorderRoundedIcon from "@mui/icons-material/StarBorderRounded";
 import { themeParams } from "@telegram-apps/sdk";
+import type { MenuItem } from "../../types/MenuItem";
 
-const MainMenu = () => {
+const init: MenuItem[] = [
+  {
+    Icon: ErrorOutlineRoundedIcon,
+    header: "Проблемы с подключением",
+    id: 1,
+    link: "/connection-problems",
+  },
+  {
+    Icon: HelpOutlineRoundedIcon,
+    header: "Вопросы по работе камеры",
+    id: 2,
+    link: "/faq",
+  },
+  {
+    Icon: StarBorderRoundedIcon,
+    header: "Полезные функции",
+    id: 3,
+    link: "/features",
+    isLast: true,
+  },
+];
+
+const MainMenu = ({ initialValues = init }: { initialValues?: MenuItem[] }) => {
   return (
     <div
       style={{
@@ -15,22 +38,15 @@ const MainMenu = () => {
         flexDirection: "column",
       }}
     >
-      <MainMenuElement
-        Icon={ErrorOutlineRoundedIcon}
-        text="Проблемы с подключением"
-        link="/connection-problems"
-      />
-      <MainMenuElement
-        Icon={HelpOutlineRoundedIcon}
-        text="Вопросы по работе камеры"
-        link="/faq"
-      />
-      <MainMenuElement
-        Icon={StarBorderRoundedIcon}
-        text="Полезные функции"
-        link="/features"
-        isLast
-      />
+      {initialValues.map((item, index) => (
+        <MainMenuElement
+          key={index}
+          Icon={item.Icon}
+          text={item.header}
+          link={item.link}
+          isLast={item.isLast}
+        />
+      ))}
     </div>
   );
 };

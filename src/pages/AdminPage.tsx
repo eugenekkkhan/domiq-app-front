@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react";
-import AdminPageNavbar from "./AdminPageNavbar";
-import { getAllArticles } from "./queries";
-import { getCookie } from "./utils";
+import AdminPageNavbar from "../AdminPageNavbar";
+import { getAllArticles } from "../queries";
+import { getCookie } from "../utils/utils";
+import Button from "@mui/material/Button";
+import { themeParams } from "@telegram-apps/sdk";
 
 type ArtHeader = {
-  Header: string;
-  SysHeader: string;
+  header: string;
+  id: number;
+  type: "header" | "article";
 };
 
 const AdminPage = () => {
@@ -18,7 +21,7 @@ const AdminPage = () => {
         setArticles(response.data);
       })
       .catch(() => {
-        setArticles([{ Header: "ewdjewoi", SysHeader: "dfwiohwio" }]);
+        setArticles([{ header: "Empty", id: 0, type: "header" }]);
       });
   }, []);
   return (
@@ -26,22 +29,20 @@ const AdminPage = () => {
       style={{
         display: "flex",
         gap: "12px",
-        minWidth: "640px",
         flexDirection: "column",
         top: "calc(64px + 12px)",
         position: "relative",
       }}
     >
-
       <AdminPageNavbar />
       <div style={{ display: "flex", justifyContent: "end" }}>
-        <button
+        <Button
           style={{
             width: "120px",
           }}
         >
           add article
-        </button>
+        </Button>
       </div>
       {articles.map((article, index) => (
         <div
@@ -50,7 +51,7 @@ const AdminPage = () => {
             display: "flex",
             width: "100%",
             border: "1px solid #ccc",
-            borderRadius: "20px",
+            borderRadius: "16px",
             justifyContent: "space-between",
           }}
         >
@@ -62,8 +63,10 @@ const AdminPage = () => {
               padding: "12px",
             }}
           >
-            <b>{article.Header}</b>
-            <p>{article.SysHeader}</p>
+            <b>{article.header}</b>
+            <p style={{ fontSize: "0.8em" }}>
+              id: {article.id} type: {article.type}
+            </p>
           </div>
           <div
             style={{
@@ -73,8 +76,24 @@ const AdminPage = () => {
               padding: "12px",
             }}
           >
-            <button style={{ height: "100%" }}>edit</button>
-            <button style={{ height: "100%" }}>delete</button>
+            <Button
+              style={{
+                height: "100%",
+                background: themeParams.buttonColor(),
+                color: themeParams.buttonTextColor(),
+              }}
+            >
+              редактировать
+            </Button>
+            <Button
+              style={{
+                height: "100%",
+                background: themeParams.buttonColor(),
+                color: themeParams.buttonTextColor(),
+              }}
+            >
+              удалить
+            </Button>
           </div>
         </div>
       ))}
