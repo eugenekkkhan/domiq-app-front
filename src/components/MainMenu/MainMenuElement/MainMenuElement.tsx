@@ -4,20 +4,23 @@ import KeyboardArrowRightRoundedIcon from "@mui/icons-material/KeyboardArrowRigh
 import { NavLink } from "react-router";
 import { themeParams } from "@telegram-apps/sdk";
 
+type MainMenuElementProps = {
+  text: string;
+  link?: string;
+  id?: string;
+  Icon?: OverridableComponent<SvgIconTypeMap<{}, "svg">> | null;
+  isLast?: boolean;
+};
+
 const MainMenuElement = ({
   text,
-  link,
+  link = "",
+  id = "",
   Icon = null,
   isLast = false,
-}: {
-  text: string;
-  isLast?: boolean;
-  Icon?: OverridableComponent<SvgIconTypeMap<{}, "svg">> | null;
-  link: string;
-}) => {
-  console.log(link);
+}: MainMenuElementProps) => {
   return (
-    <NavLink to={link}>
+    <NavLink to={link ? link : "/content/" + id}>
       <div
         style={{
           display: "flex",

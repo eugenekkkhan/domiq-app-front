@@ -10,24 +10,29 @@ const init: MenuItem[] = [
     Icon: ErrorOutlineRoundedIcon,
     header: "Проблемы с подключением",
     id: 1,
-    link: "/connection-problems",
   },
   {
     Icon: HelpOutlineRoundedIcon,
     header: "Вопросы по работе камеры",
     id: 2,
-    link: "/faq",
   },
   {
     Icon: StarBorderRoundedIcon,
     header: "Полезные функции",
     id: 3,
-    link: "/features",
     isLast: true,
   },
 ];
 
+const makeLastTrue = (items: MenuItem[]) => {
+  const lastItem = items[items.length - 1];
+  if (lastItem) {
+    lastItem.isLast = true;
+  }
+};
+
 const MainMenu = ({ initialValues = init }: { initialValues?: MenuItem[] }) => {
+  makeLastTrue(initialValues);
   return (
     <div
       style={{
@@ -44,6 +49,7 @@ const MainMenu = ({ initialValues = init }: { initialValues?: MenuItem[] }) => {
           Icon={item.Icon}
           text={item.header}
           link={item.link}
+          id={item.id ? item.id.toString() : undefined}
           isLast={item.isLast}
         />
       ))}

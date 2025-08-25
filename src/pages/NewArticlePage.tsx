@@ -5,6 +5,9 @@ import type { NewArticle } from "../types/NewArticle";
 import { convertTimeStampToDate } from "../utils/convertTime";
 import { themeParams } from "@telegram-apps/sdk";
 import { useBackButton } from "../customHooks/useBackButton";
+import style from "./md.module.css";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 // {
 //     "ID": 1,
 //     "CreatedAt": "2025-08-15T12:42:00.643939+03:00",
@@ -54,7 +57,9 @@ const NewArticlePage = () => {
         )}
       </div>
       <div>
-        <p>{article?.content}</p>
+        <div className={style.reactMarkDown}>
+          <Markdown remarkPlugins={[remarkGfm]}>{article?.content}</Markdown>
+        </div>
       </div>
     </>
   );

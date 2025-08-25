@@ -1,7 +1,7 @@
 export type ArticleType = {
   content: string;
   header: string;
-  id: number;
+  id: number | null;
   parent_id: number | null;
-  type: string;
+  type: "article" | "section";
 };

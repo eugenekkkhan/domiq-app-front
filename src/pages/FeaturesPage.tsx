@@ -25,7 +25,6 @@ const Features = () => {
       )
       .then((res) => {
         setMenuElems(dataPreparation(res.data as MenuItem[]));
-        console.log(res.data);
       });
   }, []);
   return (

@@ -9,4 +9,7 @@ const secsToMins = (seconds: number) => {
 const convertTimeStampToDate = (date: string) =>
   new Date(date).toISOString().slice(0, 10).split("-").reverse().join(".");
 
-export { secsToMins, convertTimeStampToDate };
+const convertTimeStampToDateWithTime = (date: string) =>
+  new Date(date).toISOString().slice(0, 19).replace("T", " ");
+
+export { secsToMins, convertTimeStampToDate, convertTimeStampToDateWithTime };

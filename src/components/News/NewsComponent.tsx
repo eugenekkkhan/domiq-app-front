@@ -51,11 +51,7 @@ type NewsItem = {
 };
 
 const NewsComponent = () => {
-  const defaultData: NewsItem = {
-    short: "",
-    ID: 0,
-  };
-  const [newsData, setNewsData] = useState<NewsItem[]>([defaultData]);
+  const [newsData, setNewsData] = useState<NewsItem[]>([]);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
   useEffect(() => {
@@ -65,7 +61,14 @@ const NewsComponent = () => {
         {}
       )
       .then((res) => {
-        setNewsData(res.data.reverse() as NewsItem[]);
+        if (res.data.length === 2 || res.data.length === 3) {
+          setNewsData(() => [
+            ...(res.data.reverse() as NewsItem[]),
+            ...(res.data.reverse() as NewsItem[]),
+          ]);
+        } else {
+          setNewsData(res.data.reverse() as NewsItem[]);
+        }
       });
   }, []);
 
@@ -76,7 +79,6 @@ const NewsComponent = () => {
     slidesToShow: 3,
     slidesToScroll: 1,
     arrows: false,
-    autoplay: true,
     centerMode: true,
     autoplaySpeed: 2000,
     customPaging: (i: number) => {
@@ -99,7 +101,14 @@ const NewsComponent = () => {
   };
 
   return (
-    <div style={{ position: "relative", height: "160px", width: "100%" }}>
+    <div
+      style={{
+        position: "relative",
+        height: "160px",
+        width: "100%",
+        // display: newsData.length === 0 ? "none" : "block",
+      }}
+    >
       <div
         style={{
           width: "calc(300vw - 8px)",

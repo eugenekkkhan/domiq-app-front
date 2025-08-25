@@ -1,0 +1,10 @@
+.reactMarkDown img {
+  width: 100%;
+  border-radius: 26px;
+}
+
+.reactMarkDown p {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
