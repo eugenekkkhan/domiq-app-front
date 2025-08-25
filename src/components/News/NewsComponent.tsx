@@ -81,6 +81,7 @@ const NewsComponent = () => {
     arrows: false,
     centerMode: true,
     autoplaySpeed: 2000,
+    touchThreshold: 1000,
     customPaging: (i: number) => {
       return (
         <div
