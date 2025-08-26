@@ -26,6 +26,7 @@ export default function Mailing({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [mailError, setMailError] = useState<string | null>(null);
 
   const [message, setMessage] = useState("");
   return (
@@ -35,17 +36,27 @@ export default function Mailing({ children }: { children: React.ReactNode }) {
         <Box sx={style}>
           <h3>Рассылка</h3>
           <TextField
+            error={!!mailError}
             rows={4}
             multiline
             variant="outlined"
             placeholder="Введите текст рассылки"
+            helperText={mailError}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
           />
           <Button
             variant="contained"
             onClick={() => {
-              sendMailing(message);
+              sendMailing(message)
+                .then(() => {
+                  setMessage("");
+                  setMailError(null);
+                  handleClose();
+                })
+                .catch(() => {
+                  setMailError("Ошибка отправки рассылки");
+                });
             }}
             disabled={!message}
             disableElevation
