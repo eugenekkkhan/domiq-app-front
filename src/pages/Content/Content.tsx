@@ -4,7 +4,6 @@ import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useParams } from "react-router";
 import type { ArticleType } from "../../types/Article";
-import { useBackButton } from "../../customHooks/useBackButton";
 import MainMenu from "../../components/MainMenu/MainMenu";
 import { getArticlesByParentId } from "../../queries";
 import type { MenuItem } from "../../types/MenuItem";
@@ -22,14 +21,13 @@ const Content = () => {
         const data = res.data as ArticleType;
         setContent(data);
         if (data.type === "section") {
-          // Fetch article headers for the section
           getArticlesByParentId(contentId ?? "").then((res) => {
             setArticleHeaders(res.data as MenuItem[]);
           });
         }
       });
   }, [contentId]);
-  useBackButton();
+
   return (
     <>
       {content && (

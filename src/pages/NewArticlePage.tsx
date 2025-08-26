@@ -4,7 +4,6 @@ import { useParams } from "react-router";
 import type { NewArticle } from "../types/NewArticle";
 import { convertTimeStampToDate } from "../utils/convertTime";
 import { themeParams } from "@telegram-apps/sdk";
-import { useBackButton } from "../customHooks/useBackButton";
 import style from "./md.module.css";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -20,7 +19,7 @@ import remarkGfm from "remark-gfm";
 const NewArticlePage = () => {
   const [article, setArticle] = useState<NewArticle>();
   const { articleId } = useParams();
-  useBackButton();
+
   useEffect(() => {
     axios
       .get(import.meta.env.VITE_APPLICATION_API_LINK + "public/news/get", {

@@ -2,11 +2,9 @@ import Banner from "./components/Banner/Banner";
 import MainMenu from "./components/MainMenu/MainMenu";
 import ButtonMain from "./components/Button/ButtonMain";
 import ChatBubbleRoundedIcon from "@mui/icons-material/ChatBubbleRounded";
-import { useCloseButton } from "./customHooks/useCloseButton";
 import NewsComponent from "./components/News/NewsComponent";
 
 const App = () => {
-  useCloseButton();
   return (
     <div
       style={{
@@ -16,6 +14,7 @@ const App = () => {
         gap: "16px",
       }}
     >
+      {import.meta.env.VITE_DEV_STATUS === "development" && "development"}
       <NewsComponent />
       <Banner />
       <MainMenu />

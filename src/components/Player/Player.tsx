@@ -1,11 +1,8 @@
 import ReactPlayer from "react-player";
 import { useParams } from "react-router";
-import { useBackButton } from "../../customHooks/useBackButton";
 
 const PlayerComponent = () => {
   const videoLink = useParams().videoLink;
-  useBackButton();
-
   return (
     <ReactPlayer
       style={{

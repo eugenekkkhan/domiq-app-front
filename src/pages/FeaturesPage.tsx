@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import MainMenu from "../components/MainMenu/MainMenu";
-import { useBackButton } from "../customHooks/useBackButton";
 import type { MenuItem } from "../types/MenuItem";
 import axios from "axios";
 
@@ -13,8 +12,6 @@ const dataPreparation = (elems: MenuItem[]) => {
 };
 
 const Features = () => {
-  useBackButton();
-
   const [menuElems, setMenuElems] = useState<MenuItem[]>([]);
   useEffect(() => {
     axios
