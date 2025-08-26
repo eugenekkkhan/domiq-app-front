@@ -128,7 +128,7 @@ const getAllUsersData = () =>
 
 const sendMailing = (message: string) =>
   axios.post(
-    import.meta.env.VITE_APPLICATION_API_LINK + "private/send_mailing",
+    import.meta.env.VITE_APPLICATION_API_LINK + "private/mailing",
     { mailingText: message },
     {
       headers: { Authorization: "Basic " + getCookie("token") },
