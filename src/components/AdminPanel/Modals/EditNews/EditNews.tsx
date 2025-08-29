@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 import type { SxProps } from "@mui/material/styles";
 import type { Theme } from "@emotion/react";
 import { getNewsById, updateNews, uploadMedia } from "../../../../queries";
-import MDEditor from "@uiw/react-md-editor";
 import { MuiFileInput } from "mui-file-input";
 import type { NewArticle } from "../../../../types/NewArticle";
+import CustomMDEditor from "../../../CustomMDEditor/CustomMDEditor";
 
 const style: SxProps<Theme> = {
   position: "absolute",
@@ -95,7 +95,7 @@ export default function EditNews({ id }: { id: number }) {
             value={file}
             onChange={(e) => handleChangeFile(e)}
           />
-          <MDEditor
+          <CustomMDEditor
             value={form.content}
             onChange={(value) => setForm({ ...form, content: value as string })}
           />

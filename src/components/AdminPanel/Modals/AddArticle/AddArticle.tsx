@@ -5,7 +5,6 @@ import Modal from "@mui/material/Modal";
 import type { SxProps } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import { useEffect, useState } from "react";
-import MDEditor from "@uiw/react-md-editor";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import {
   createArticle,
@@ -18,6 +17,7 @@ import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import { MuiFileInput } from "mui-file-input";
+import CustomMDEditor from "../../../CustomMDEditor/CustomMDEditor";
 
 const style: SxProps<Theme> = {
   position: "absolute",
@@ -161,9 +161,8 @@ export default function AddArticle() {
           />
 
           {form.type === "article" && (
-            <MDEditor
+            <CustomMDEditor
               value={form.content}
-              height={400}
               onChange={(value) =>
                 setForm({ ...form, content: value as string })
               }

@@ -12,12 +12,12 @@ import {
 } from "../../../../queries";
 import type { ArticleType } from "../../../../types/Article";
 import TextField from "@mui/material/TextField";
-import MDEditor from "@uiw/react-md-editor";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import { MuiFileInput } from "mui-file-input";
+import CustomMDEditor from "../../../CustomMDEditor/CustomMDEditor";
 
 const style: SxProps<Theme> = {
   position: "absolute",
@@ -155,7 +155,7 @@ export default function EditArticle({ id }: { id: number }) {
                 value={file}
                 onChange={(e) => handleChangeFile(e)}
               />
-              <MDEditor
+              <CustomMDEditor
                 value={form.content}
                 onChange={(value) =>
                   setForm({ ...form, content: value as string })
