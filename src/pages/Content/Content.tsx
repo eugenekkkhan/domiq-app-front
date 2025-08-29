@@ -8,6 +8,8 @@ import MainMenu from "../../components/MainMenu/MainMenu";
 import { getArticlesByParentId } from "../../queries";
 import type { MenuItem } from "../../types/MenuItem";
 import style from "../md.module.css";
+import remarkBreaks from "remark-breaks";
+import rehypeRaw from "rehype-raw"
 const Content = () => {
   const [content, setContent] = useState<ArticleType | null>();
   const [articleHeaders, setArticleHeaders] = useState<MenuItem[]>([]);
@@ -42,8 +44,9 @@ const Content = () => {
           {content.type === "article" && (
             <div className={style.reactMarkDown}>
               <Markdown
-                children={content.content}
-                remarkPlugins={[remarkGfm]}
+                children={content.content.replace(/\\n/gi, "\n")}
+                rehypePlugins={[rehypeRaw]}
+                remarkPlugins={[remarkGfm, remarkBreaks]}
               />
             </div>
           )}
