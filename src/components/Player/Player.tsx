@@ -2,7 +2,7 @@ import ReactPlayer from "react-player";
 import { useParams } from "react-router";
 
 const PlayerComponent = () => {
-  const videoLink = useParams().videoLink;
+  const videoLink = useParams().videoLink?.replace("video", "media");
   return (
     <ReactPlayer
       style={{

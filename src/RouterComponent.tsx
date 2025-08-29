@@ -40,7 +40,7 @@ const MainRoutes = () => {
       />
       <Route path="/" element={<App />} />
       <Route path="/videos" element={<Videos />} />
-      <Route path="/media/:videoLink" element={<PlayerComponent />} />
+      <Route path="/video/:videoLink" element={<PlayerComponent />} />
       <Route path="/news/:articleId" element={<NewArticlePage />} />
       <Route path="/content/:contentId" element={<Content />} />
     </Routes>

@@ -21,7 +21,7 @@ const VideoSectionElement = ({ video }: { video: Video }) => {
   }, []);
 
   return (
-    <NavLink to={`${video.source}`}>
+    <NavLink to={`${video.source.replace("media", "video")}`}>
       <div
         style={{
           display: "flex",
