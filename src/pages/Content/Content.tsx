@@ -41,7 +41,10 @@ const Content = () => {
           <h1>{content.header}</h1>
           {content.type === "article" && (
             <div className={style.reactMarkDown}>
-              <Markdown remarkPlugins={[remarkGfm]}>{content.content}</Markdown>
+              <Markdown
+                children={content.content}
+                remarkPlugins={[remarkGfm]}
+              />
             </div>
           )}
           {/* {JSON.stringify(articleHeaders)} */}
