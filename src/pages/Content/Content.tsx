@@ -10,7 +10,8 @@ import type { MenuItem } from "../../types/MenuItem";
 import style from "../md.module.css";
 import remarkBreaks from "remark-breaks";
 import rehypeRaw from "rehype-raw";
-import { themeParams } from "@telegram-apps/sdk";
+import { themeParams, miniApp } from "@telegram-apps/sdk";
+
 const Content = () => {
   const [content, setContent] = useState<ArticleType | null>();
   const [articleHeaders, setArticleHeaders] = useState<MenuItem[]>([]);
@@ -49,14 +50,36 @@ const Content = () => {
                 rehypePlugins={[rehypeRaw]}
                 remarkPlugins={[remarkGfm, remarkBreaks]}
                 components={{
-                  a: ({ node, ...props }) => (
-                    <a
-                      {...props}
-                      style={{ color: themeParams.linkColor() }}
-                      target={props.target || "_blank"}
-                      rel={props.rel || "noopener noreferrer"}
-                    />
-                  ),
+                  a: (props) => {
+                    const href = String(props.href || "");
+                    const onClick: React.MouseEventHandler<
+                      HTMLAnchorElement
+                    > = (e) => {
+                      if (!href) return;
+                      e.preventDefault();
+                      try {
+                        if ((miniApp as any).openLink?.isAvailable?.()) {
+                          (miniApp as any).openLink(href);
+                        } else if ((window as any).Telegram?.WebApp?.openLink) {
+                          (window as any).Telegram.WebApp.openLink(href);
+                        } else {
+                          window.open(href, "_blank", "noopener,noreferrer");
+                        }
+                      } catch {
+                        window.open(href, "_blank", "noopener,noreferrer");
+                      }
+                    };
+
+                    return (
+                      <a
+                        {...props}
+                        onClick={onClick}
+                        style={{ color: themeParams.linkColor() }}
+                        target={props.target || "_blank"}
+                        rel={props.rel || "noopener noreferrer"}
+                      />
+                    );
+                  },
                 }}
               />
             </div>
