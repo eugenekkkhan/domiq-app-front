@@ -9,7 +9,8 @@ import { getArticlesByParentId } from "../../queries";
 import type { MenuItem } from "../../types/MenuItem";
 import style from "../md.module.css";
 import remarkBreaks from "remark-breaks";
-import rehypeRaw from "rehype-raw"
+import rehypeRaw from "rehype-raw";
+import { themeParams } from "@telegram-apps/sdk";
 const Content = () => {
   const [content, setContent] = useState<ArticleType | null>();
   const [articleHeaders, setArticleHeaders] = useState<MenuItem[]>([]);
@@ -47,6 +48,16 @@ const Content = () => {
                 children={content.content.replace(/\\n/gi, "\n")}
                 rehypePlugins={[rehypeRaw]}
                 remarkPlugins={[remarkGfm, remarkBreaks]}
+                components={{
+                  a: ({ node, ...props }) => (
+                    <a
+                      {...props}
+                      style={{ color: themeParams.linkColor() }}
+                      target={props.target || "_blank"}
+                      rel={props.rel || "noopener noreferrer"}
+                    />
+                  ),
+                }}
               />
             </div>
           )}
