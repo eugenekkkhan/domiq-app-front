@@ -1,11 +1,10 @@
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { SxProps } from "@mui/material/styles";
 import type { Theme } from "@emotion/react";
-import { createNews, uploadMedia } from "../../../../queries";
-import { MuiFileInput } from "mui-file-input";
+import { createNews } from "../../../../queries";
 import CustomMDEditor from "../../../CustomMDEditor/CustomMDEditor";
 
 const style: SxProps<Theme> = {
@@ -38,29 +37,6 @@ export default function AddNews() {
     setForm(initialForm);
   };
 
-  const [file, setFile] = useState<File | null>(null);
-
-  function handleChangeFile(event: File | null) {
-    setFile(event);
-  }
-
-  useEffect(() => {
-    if (file) {
-      uploadMedia(file).then((response) => {
-        setForm({
-          ...form,
-          content: form.content.concat(
-            `![image](${
-              import.meta.env.VITE_API_LINK +
-              response.data.replaceAll(" ", "%20")
-            })`
-          ),
-        });
-        setFile(null);
-      });
-    }
-  }, [file]);
-
   return (
     <>
       <Button
@@ -74,12 +50,6 @@ export default function AddNews() {
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
           <h3>Добавление новости</h3>
-          <MuiFileInput
-            label="Добавление изображения"
-            placeholder="Выберите файл для добавления"
-            value={file}
-            onChange={(e) => handleChangeFile(e)}
-          />
           <CustomMDEditor
             value={form.content}
             onChange={(value) => setForm({ ...form, content: value as string })}

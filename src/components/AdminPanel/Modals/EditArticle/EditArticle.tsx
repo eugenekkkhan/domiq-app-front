@@ -8,7 +8,6 @@ import {
   getAllArticles,
   getArticle,
   updateArticle,
-  uploadMedia,
 } from "../../../../queries";
 import type { ArticleType } from "../../../../types/Article";
 import TextField from "@mui/material/TextField";
@@ -16,7 +15,6 @@ import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
-import { MuiFileInput } from "mui-file-input";
 import CustomMDEditor from "../../../CustomMDEditor/CustomMDEditor";
 
 const style: SxProps<Theme> = {
@@ -82,29 +80,6 @@ export default function EditArticle({ id }: { id: number }) {
     setForm(initialForm);
   };
 
-  const [file, setFile] = useState<File | null>(null);
-
-  function handleChangeFile(event: File | null) {
-    setFile(event);
-  }
-
-  useEffect(() => {
-    if (file) {
-      uploadMedia(file).then((response) => {
-        setForm({
-          ...form,
-          content: form.content.concat(
-            `![image](${
-              import.meta.env.VITE_API_LINK +
-              response.data.replaceAll(" ", "%20")
-            })`
-          ),
-        });
-        setFile(null);
-      });
-    }
-  }, [file]);
-
   return (
     <>
       <Button
@@ -148,20 +123,12 @@ export default function EditArticle({ id }: { id: number }) {
           </FormControl>
 
           {form.type === "article" && (
-            <>
-              <MuiFileInput
-                label="Добавление изображения"
-                placeholder="Выберите файл для добавления"
-                value={file}
-                onChange={(e) => handleChangeFile(e)}
-              />
-              <CustomMDEditor
-                value={form.content}
-                onChange={(value) =>
-                  setForm({ ...form, content: value as string })
-                }
-              />
-            </>
+            <CustomMDEditor
+              value={form.content}
+              onChange={(value) =>
+                setForm({ ...form, content: value as string })
+              }
+            />
           )}
           <div style={{ display: "flex", justifyContent: "end", gap: "8px" }}>
             {(form.header !== initialForm.header ||
