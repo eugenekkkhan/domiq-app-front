@@ -93,8 +93,6 @@ const insertImageUploadCommand: ICommand = {
   },
 };
 
-console.log(getCommands());
-
 const CustomMDEditor = ({
   value,
   onChange,
