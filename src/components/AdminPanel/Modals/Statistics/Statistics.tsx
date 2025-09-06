@@ -1,28 +1,10 @@
-import type { Theme } from "@emotion/react";
-import Box from "@mui/material/Box";
-import Modal from "@mui/material/Modal";
-import type { SxProps } from "@mui/material/styles";
+import Button from "@mui/material/Button";
 import { useEffect, useState } from "react";
 import {
   getAllUsersData,
   // getUsersDevices,
 } from "../../../../queries";
-import Button from "@mui/material/Button";
-
-const style: SxProps<Theme> = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "80%",
-  bgcolor: "background.paper",
-  borderRadius: "12px",
-  boxShadow: 24,
-  p: "8px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "8px",
-};
+import CustomModal from "../CustomModal/CustomModal";
 
 export default function Statistics({
   children,
@@ -58,20 +40,23 @@ export default function Statistics({
   return (
     <>
       <div onClick={handleOpen}>{children}</div>
-      <Modal open={open} onClose={handleClose}>
-        <Box sx={style}>
-          <h3>Статистика</h3>
-          <Button variant="contained" href={links.users} download loading={loading.users}>
-            Получить данные всех пользователей
-          </Button>
-          {/* <Button variant="contained" href={links.devices} download loading={loading.devices}>
-            Получить данные об устройствах пользователей
-          </Button> */}
-          <Button variant="outlined" onClick={handleClose}>
-            Закрыть
-          </Button>
-        </Box>
-      </Modal>
+      <CustomModal open={open} onClose={handleClose}>
+        <h3>Статистика</h3>
+        <Button
+          variant="contained"
+          href={links.users}
+          download
+          loading={loading.users}
+        >
+          Получить данные всех пользователей
+        </Button>
+        {/* <Button variant="contained" href={links.devices} download loading={loading.devices}>
+          Получить данные об устройствах пользователей
+        </Button> */}
+        <Button variant="outlined" onClick={handleClose}>
+          Закрыть
+        </Button>
+      </CustomModal>
     </>
   );
 }

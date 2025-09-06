@@ -1,26 +1,8 @@
-import type { Theme } from "@emotion/react";
-import Box from "@mui/material/Box";
-import Modal from "@mui/material/Modal";
-import type { SxProps } from "@mui/material/styles";
-import { useState } from "react";
 import Button from "@mui/material/Button";
+import { useState } from "react";
 import TextField from "@mui/material/TextField";
 import { sendMailing } from "../../../../queries";
-
-const style: SxProps<Theme> = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "80%",
-  bgcolor: "background.paper",
-  borderRadius: "12px",
-  boxShadow: 24,
-  p: "8px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "8px",
-};
+import CustomModal from "../CustomModal/CustomModal";
 
 export default function Mailing({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
@@ -32,52 +14,50 @@ export default function Mailing({ children }: { children: React.ReactNode }) {
   return (
     <>
       <div onClick={handleOpen}>{children}</div>
-      <Modal open={open} onClose={handleClose}>
-        <Box sx={style}>
-          <h3>Рассылка</h3>
-          <TextField
-            error={!!mailError}
-            rows={4}
-            multiline
-            variant="outlined"
-            placeholder="Введите текст рассылки"
-            helperText={mailError}
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-          />
-          <Button
-            variant="contained"
-            onClick={() => {
-              sendMailing(message)
-                .then(() => {
-                  setMessage("");
-                  setMailError(null);
-                  handleClose();
-                })
-                .catch(() => {
-                  setMailError("Ошибка отправки рассылки");
-                });
-            }}
-            disabled={!message}
-            disableElevation
-          >
-            Отправить
-          </Button>
-          {message && (
-            <Button
-              variant="outlined"
-              onClick={() => {
+      <CustomModal open={open} onClose={handleClose}>
+        <h3>Рассылка</h3>
+        <TextField
+          error={!!mailError}
+          rows={4}
+          multiline
+          variant="outlined"
+          placeholder="Введите текст рассылки"
+          helperText={mailError}
+          value={message}
+          onChange={(e) => setMessage(e.target.value)}
+        />
+        <Button
+          variant="contained"
+          onClick={() => {
+            sendMailing(message)
+              .then(() => {
                 setMessage("");
-              }}
-            >
-              Очистить
-            </Button>
-          )}
-          <Button variant="outlined" onClick={handleClose}>
-            Закрыть
+                setMailError(null);
+                handleClose();
+              })
+              .catch(() => {
+                setMailError("Ошибка отправки рассылки");
+              });
+          }}
+          disabled={!message}
+          disableElevation
+        >
+          Отправить
+        </Button>
+        {message && (
+          <Button
+            variant="outlined"
+            onClick={() => {
+              setMessage("");
+            }}
+          >
+            Очистить
           </Button>
-        </Box>
-      </Modal>
+        )}
+        <Button variant="outlined" onClick={handleClose}>
+          Закрыть
+        </Button>
+      </CustomModal>
     </>
   );
 }

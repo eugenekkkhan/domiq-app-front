@@ -8,6 +8,7 @@ import type {
   TextState,
 } from "@uiw/react-md-editor";
 import { uploadMedia } from "../../queries";
+import { useEffect, useState } from "react";
 
 const insertBrCommand: ICommand = {
   name: "insert-br",
@@ -96,13 +97,43 @@ const insertImageUploadCommand: ICommand = {
 const CustomMDEditor = ({
   value,
   onChange,
+  height,
+  heightVh = 60,
+  minHeight,
+  maxHeight,
 }: {
   value: string;
   onChange: (value: string) => void;
+  height?: number; // fixed px height overrides responsive behavior
+  heightVh?: number; // responsive height as % of viewport height (vh)
+  minHeight?: number; // optional min px height when responsive
+  maxHeight?: number; // optional max px height when responsive
 }) => {
+  const computeResponsive = () => {
+    const vh = heightVh ?? 60;
+    if (typeof window === "undefined") return 600;
+    let h = Math.round((window.innerHeight * vh) / 100);
+    if (typeof minHeight === "number") h = Math.max(minHeight, h);
+    if (typeof maxHeight === "number") h = Math.min(maxHeight, h);
+    return h;
+  };
+
+  const [responsiveHeight, setResponsiveHeight] = useState<number>(computeResponsive);
+
+  useEffect(() => {
+    if (typeof height === "number") return; // fixed height, no need to listen
+    const onResize = () => setResponsiveHeight(computeResponsive());
+    onResize();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [height, heightVh, minHeight, maxHeight]);
+
+  const editorHeight = typeof height === "number" ? height : responsiveHeight;
   return (
     <MDEditor
       value={value}
+      height={editorHeight}
       commands={[
         insertBrCommand,
         insertEmptyLinkCommand,
@@ -110,6 +141,7 @@ const CustomMDEditor = ({
         { keyCommand: "divider" },
         ...getCommands(),
       ]}
+      visibleDragbar
       onChange={(val) => onChange(val ?? "")}
     />
   );

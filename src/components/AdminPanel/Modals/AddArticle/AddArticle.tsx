@@ -1,36 +1,15 @@
-import type { Theme } from "@emotion/react";
-import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
-import type { SxProps } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import { useEffect, useState } from "react";
 import ButtonGroup from "@mui/material/ButtonGroup";
-import {
-  createArticle,
-  getAllArticles,
-} from "../../../../queries";
+import { createArticle, getAllArticles } from "../../../../queries";
 import type { ArticleType } from "../../../../types/Article";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
 import Select from "@mui/material/Select";
 import MenuItem from "@mui/material/MenuItem";
 import CustomMDEditor from "../../../CustomMDEditor/CustomMDEditor";
-
-const style: SxProps<Theme> = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "80%",
-  bgcolor: "background.paper",
-  borderRadius: "12px",
-  boxShadow: 24,
-  p: "8px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "8px",
-};
+import CustomModal from "../CustomModal/CustomModal";
 
 export default function AddArticle() {
   const [open, setOpen] = useState(false);
@@ -79,100 +58,92 @@ export default function AddArticle() {
       >
         Добавить статью
       </Button>
-      <Modal open={open} onClose={handleClose}>
-        <Box sx={style}>
-          <h3>Добавление статьи</h3>
-          <TextField
-            value={form.header}
-            label={`Заголовок ${
-              form.type === "article" ? "статьи" : "раздела"
-            }`}
-            variant="outlined"
-            required
-            fullWidth
-            onChange={(e) => handleChange(e, "header")}
-          />
-          <ButtonGroup fullWidth>
-            <Button
-              variant={form.type === "article" ? "contained" : "outlined"}
-              onClick={() => setForm({ ...form, type: "article" })}
-            >
-              Статья
-            </Button>
-            <Button
-              variant={form.type === "section" ? "contained" : "outlined"}
-              onClick={() => setForm({ ...form, type: "section" })}
-            >
-              Раздел
-            </Button>
-          </ButtonGroup>
-          <FormControl fullWidth required>
-            <InputLabel>Раздел</InputLabel>
-            <Select
-              label="Раздел"
-              onChange={(e) =>
-                handleChange(
-                  e as React.ChangeEvent<
-                    HTMLInputElement | HTMLTextAreaElement
-                  >,
-                  "parentId"
-                )
-              }
-              value={form.parentId}
-            >
-              {data.map((item) => (
-                <MenuItem key={item.id} value={item.id as number}>
-                  {item.header}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+      <CustomModal open={open} onClose={handleClose} fullWidth>
+        <h3>Добавление статьи</h3>
+        <TextField
+          value={form.header}
+          label={`Заголовок ${form.type === "article" ? "статьи" : "раздела"}`}
+          variant="outlined"
+          required
+          fullWidth
+          onChange={(e) => handleChange(e, "header")}
+        />
+        <ButtonGroup fullWidth>
+          <Button
+            variant={form.type === "article" ? "contained" : "outlined"}
+            onClick={() => setForm({ ...form, type: "article" })}
+          >
+            Статья
+          </Button>
+          <Button
+            variant={form.type === "section" ? "contained" : "outlined"}
+            onClick={() => setForm({ ...form, type: "section" })}
+          >
+            Раздел
+          </Button>
+        </ButtonGroup>
+        <FormControl fullWidth required>
+          <InputLabel>Раздел</InputLabel>
+          <Select
+            label="Раздел"
+            onChange={(e) =>
+              handleChange(
+                e as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+                "parentId"
+              )
+            }
+            value={form.parentId}
+          >
+            {data.map((item) => (
+              <MenuItem key={item.id} value={item.id as number}>
+                {item.header}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
 
-          {form.type === "article" && (
-            <CustomMDEditor
-              value={form.content}
-              onChange={(value) =>
-                setForm({ ...form, content: value as string })
-              }
-            />
-          )}
-          <div style={{ display: "flex", justifyContent: "end", gap: "8px" }}>
-            {(form.header || form.content || form.parentId) && (
-              <Button
-                variant="outlined"
-                onClick={() => {
-                  resetData();
-                }}
-              >
-                Очистить
-              </Button>
-            )}
+        {form.type === "article" && (
+          <CustomMDEditor
+            value={form.content}
+            onChange={(value) => setForm({ ...form, content: value as string })}
+          />
+        )}
+        <div style={{ display: "flex", justifyContent: "end", gap: "8px" }}>
+          {(form.header || form.content || form.parentId) && (
             <Button
-              variant="contained"
-              disabled={
-                form.type === "article"
-                  ? !form.header || !form.content || !form.parentId
-                  : !form.header || !form.parentId
-              }
+              variant="outlined"
               onClick={() => {
-                handleClose();
-                createArticle({
-                  id: null,
-                  header: form.header,
-                  content: form.content,
-                  parent_id: parseInt(form.parentId),
-                  type: form.type,
-                }).then(() => {
-                  resetData();
-                  window.location.reload();
-                });
+                resetData();
               }}
             >
-              Сохранить
+              Очистить
             </Button>
-          </div>
-        </Box>
-      </Modal>
+          )}
+          <Button
+            variant="contained"
+            disabled={
+              form.type === "article"
+                ? !form.header || !form.content || !form.parentId
+                : !form.header || !form.parentId
+            }
+            onClick={() => {
+              handleClose();
+              createArticle({
+                id: null,
+                header: form.header,
+                content: form.content,
+                parent_id: parseInt(form.parentId),
+                type: form.type,
+              }).then(() => {
+                resetData();
+                window.location.reload();
+              });
+            }}
+          >
+            Сохранить
+          </Button>
+        </div>
+      </CustomModal>
     </>
   );
 }

@@ -1,26 +1,8 @@
-import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import Modal from "@mui/material/Modal";
 import { useState } from "react";
-import type { SxProps } from "@mui/material/styles";
-import type { Theme } from "@emotion/react";
 import { createNews } from "../../../../queries";
 import CustomMDEditor from "../../../CustomMDEditor/CustomMDEditor";
-
-const style: SxProps<Theme> = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  width: "80%",
-  bgcolor: "background.paper",
-  borderRadius: "12px",
-  boxShadow: 24,
-  p: "8px",
-  display: "flex",
-  flexDirection: "column",
-  gap: "8px",
-};
+import CustomModal from "../CustomModal/CustomModal";
 
 export default function AddNews() {
   const [open, setOpen] = useState(false);
@@ -47,42 +29,40 @@ export default function AddNews() {
       >
         Добавить новость
       </Button>
-      <Modal open={open} onClose={handleClose}>
-        <Box sx={style}>
-          <h3>Добавление новости</h3>
-          <CustomMDEditor
-            value={form.content}
-            onChange={(value) => setForm({ ...form, content: value as string })}
-          />
+      <CustomModal open={open} onClose={handleClose} fullWidth>
+        <h3>Добавление новости</h3>
+        <CustomMDEditor
+          value={form.content}
+          onChange={(value) => setForm({ ...form, content: value as string })}
+        />
 
-          <div style={{ display: "flex", justifyContent: "end", gap: "8px" }}>
-            {form.content !== initialForm.content && (
-              <Button
-                variant="outlined"
-                onClick={() => {
-                  resetData();
-                }}
-              >
-                Сброс изменений
-              </Button>
-            )}
+        <div style={{ display: "flex", justifyContent: "end", gap: "8px" }}>
+          {form.content !== initialForm.content && (
             <Button
-              variant="contained"
-              disabled={form.content === initialForm.content}
+              variant="outlined"
               onClick={() => {
-                handleClose();
-                createNews({
-                  content: form.content,
-                }).then(() => {
-                  window.location.reload();
-                });
+                resetData();
               }}
             >
-              Сохранить
+              Сброс изменений
             </Button>
-          </div>
-        </Box>
-      </Modal>
+          )}
+          <Button
+            variant="contained"
+            disabled={form.content === initialForm.content}
+            onClick={() => {
+              handleClose();
+              createNews({
+                content: form.content,
+              }).then(() => {
+                window.location.reload();
+              });
+            }}
+          >
+            Сохранить
+          </Button>
+        </div>
+      </CustomModal>
     </>
   );
 }
