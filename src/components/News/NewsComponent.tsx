@@ -2,7 +2,6 @@ import { initData, themeParams } from "@telegram-apps/sdk";
 import { useEffect, useState } from "react";
 import Slider, { type Settings } from "react-slick";
 import "./News.css";
-import axios from "axios";
 import { convertTimeStampToDate } from "../../utils/convertTime";
 import { NavLink } from "react-router";
 import { getAllNews } from "../../queries";

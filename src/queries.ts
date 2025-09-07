@@ -1,7 +1,6 @@
 import axios from "axios";
 import type { ArticleType } from "./types/Article";
 import { getCookie } from "./utils/utils";
-import { initData, initDataRaw } from "@telegram-apps/sdk";
 
 // const withHeader = axios.create();
 // initData.restore();
