@@ -1,33 +1,22 @@
 import axios from "axios";
 import type { ArticleType } from "./types/Article";
 import { getCookie } from "./utils/utils";
+import { initData, initDataRaw } from "@telegram-apps/sdk";
 
-// Axios instance used across requests
-const withHeader = axios.create();
+// const withHeader = axios.create();
+// initData.restore();
+// const userId = initData.user()?.id.toString();
 
-// Helper to safely read Telegram WebApp user id from SDK
-const getTelegramUserId = (): string | null => {
-  try {
-    const tg = (window as any)?.Telegram?.WebApp;
-    const id = tg?.initDataUnsafe?.user?.id ?? tg?.initData?.user?.id;
-    return typeof id !== "undefined" && id !== null ? String(id) : null;
-  } catch {
-    return null;
-  }
-};
-
-// Attach Telegram user id to every request if available
-withHeader.interceptors.request.use((config) => {
-  const userId = getTelegramUserId();
-  if (userId) {
-    config.headers = config.headers ?? {};
-    (config.headers as Record<string, string>)["X-User-ID"] = userId;
-  }
-  return config;
-});
+// withHeader.interceptors.request.use((config) => {
+//   if (userId) {
+//     config.headers = config.headers ?? {};
+//     (config.headers as Record<string, string>)["X-User-ID"] = userId;
+//   }
+//   return config;
+// });
 
 const auth = (username: string, password: string) =>
-  withHeader.post(
+  axios.post(
     import.meta.env.VITE_APPLICATION_API_LINK + "private/auth",
     {},
     {
@@ -38,19 +27,20 @@ const auth = (username: string, password: string) =>
   );
 
 const getAllArticles = () =>
-  withHeader.get(
+  axios.get(
     import.meta.env.VITE_APPLICATION_API_LINK + "public/all_art_headers",
     {}
   );
 
 //public
-const getAllVideos = () =>
-  withHeader.get(
+const getAllVideos = () => {
+  return axios.get(
     import.meta.env.VITE_APPLICATION_API_LINK + "public/pbVideo/get_all_videos"
   );
+};
 
 const getVideoData = (source: string) =>
-  withHeader.get(import.meta.env.VITE_API_LINK + source, {
+  axios.get(import.meta.env.VITE_API_LINK + source, {
     headers: {
       Accept: "video/mp4;charset=UTF-8",
     },
@@ -58,12 +48,12 @@ const getVideoData = (source: string) =>
   });
 
 const getThumbnailFromVideo = (source: string) =>
-  withHeader.get(import.meta.env.VITE_API_LINK + source, {
+  axios.get(import.meta.env.VITE_API_LINK + source, {
     responseType: "arraybuffer",
   });
 
 const createArticle = (article: ArticleType) =>
-  withHeader.post(
+  axios.post(
     import.meta.env.VITE_APPLICATION_API_LINK + "private/create_article",
     {
       content: article.content,
@@ -75,15 +65,12 @@ const createArticle = (article: ArticleType) =>
   );
 
 const getArticle = (id: string) =>
-  withHeader.get(
-    import.meta.env.VITE_APPLICATION_API_LINK + "public/get_article",
-    {
-      params: { id },
-    }
-  );
+  axios.get(import.meta.env.VITE_APPLICATION_API_LINK + "public/get_article", {
+    params: { id },
+  });
 
 const getArticlesByParentId = (id: string) =>
-  withHeader.get(
+  axios.get(
     import.meta.env.VITE_APPLICATION_API_LINK +
       "public/get_articles_by_parent_id",
     {
@@ -92,7 +79,7 @@ const getArticlesByParentId = (id: string) =>
   );
 
 const getAllSections = () =>
-  withHeader.get(
+  axios.get(
     import.meta.env.VITE_APPLICATION_API_LINK + "private/get_all_sections",
     {
       headers: { Authorization: "Basic " + getCookie("token") },
@@ -100,7 +87,7 @@ const getAllSections = () =>
   );
 
 const deleteArticle = (id: string) => {
-  return withHeader.delete(
+  return axios.delete(
     import.meta.env.VITE_APPLICATION_API_LINK + "private/delete_article",
     {
       headers: { Authorization: "Basic " + getCookie("token") },
@@ -110,7 +97,7 @@ const deleteArticle = (id: string) => {
 };
 
 const updateArticle = (article: ArticleType) =>
-  withHeader.post(
+  axios.post(
     import.meta.env.VITE_APPLICATION_API_LINK + "private/update_article",
     {
       content: article.content,
@@ -125,7 +112,7 @@ const updateArticle = (article: ArticleType) =>
 const uploadMedia = (file: File) => {
   const formData = new FormData();
   formData.append("file", file);
-  return withHeader.post(
+  return axios.post(
     import.meta.env.VITE_APPLICATION_API_LINK + "private/upload_media",
     formData,
     {
@@ -138,7 +125,7 @@ const uploadMedia = (file: File) => {
 };
 
 const getUsersDevices = () =>
-  withHeader.get(
+  axios.get(
     import.meta.env.VITE_APPLICATION_API_LINK + "private/get_devices_fl",
     {
       headers: { Authorization: "Basic " + getCookie("token") },
@@ -146,7 +133,7 @@ const getUsersDevices = () =>
   );
 
 const getAllUsersData = () =>
-  withHeader.get(
+  axios.get(
     import.meta.env.VITE_APPLICATION_API_LINK + "private/get_all_users_fl",
     {
       headers: { Authorization: "Basic " + getCookie("token") },
@@ -154,7 +141,7 @@ const getAllUsersData = () =>
   );
 
 const sendMailing = (message: string) =>
-  withHeader.post(
+  axios.post(
     import.meta.env.VITE_APPLICATION_API_LINK + "private/mailing",
     { mailingText: message },
     {
@@ -169,7 +156,7 @@ const createVideo = ({
   name: string;
   videoLink: string;
 }) =>
-  withHeader.post(
+  axios.post(
     import.meta.env.VITE_APPLICATION_API_LINK + "private/videos/create_video",
     {
       name,
@@ -193,7 +180,7 @@ const updateVideo = ({
   thumbnail: string;
   duration: number;
 }) =>
-  withHeader.post(
+  axios.post(
     import.meta.env.VITE_APPLICATION_API_LINK + "private/videos/update_video",
     {
       ID: parseInt(id),
@@ -207,7 +194,7 @@ const updateVideo = ({
   );
 
 const deleteVideo = (id: string) =>
-  withHeader.delete(
+  axios.delete(
     import.meta.env.VITE_APPLICATION_API_LINK + "private/videos/delete_video",
     {
       headers: { Authorization: "Basic " + getCookie("token") },
@@ -216,7 +203,7 @@ const deleteVideo = (id: string) =>
   );
 
 const createNews = ({ content }: { content: string }) =>
-  withHeader.post(
+  axios.post(
     import.meta.env.VITE_APPLICATION_API_LINK + "private/news/create",
     { content },
     {
@@ -224,13 +211,12 @@ const createNews = ({ content }: { content: string }) =>
     }
   );
 
-const getAllNews = () =>
-  withHeader.get(
-    import.meta.env.VITE_APPLICATION_API_LINK + "public/news/get_all",
-    {
-      headers: { Authorization: "Basic " + getCookie("token") },
-    }
-  );
+const getAllNews = (userId?: string) =>
+  axios.get(import.meta.env.VITE_APPLICATION_API_LINK + "public/news/get_all", {
+    headers: {
+      "User-ID": userId || "-1",
+    },
+  });
 
 const updateNews = ({
   id,
@@ -241,7 +227,7 @@ const updateNews = ({
   createdAt: string;
   content: string;
 }) =>
-  withHeader.patch(
+  axios.patch(
     import.meta.env.VITE_APPLICATION_API_LINK + "private/news/update",
     {
       id: parseInt(id),
@@ -252,7 +238,7 @@ const updateNews = ({
   );
 
 const deleteNews = (id: string) =>
-  withHeader.delete(
+  axios.delete(
     import.meta.env.VITE_APPLICATION_API_LINK + "private/news/delete",
     {
       headers: { Authorization: "Basic " + getCookie("token") },
@@ -261,13 +247,10 @@ const deleteNews = (id: string) =>
   );
 
 const getNewsById = (id: string) =>
-  withHeader.get(
-    import.meta.env.VITE_APPLICATION_API_LINK + "public/news/get",
-    {
-      headers: { Authorization: "Basic " + getCookie("token") },
-      params: { id: parseInt(id) },
-    }
-  );
+  axios.get(import.meta.env.VITE_APPLICATION_API_LINK + "public/news/get", {
+    headers: { Authorization: "Basic " + getCookie("token") },
+    params: { id: parseInt(id) },
+  });
 
 export {
   auth,

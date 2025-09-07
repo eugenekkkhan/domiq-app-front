@@ -1,10 +1,11 @@
-import { themeParams } from "@telegram-apps/sdk";
+import { initData, themeParams } from "@telegram-apps/sdk";
 import { useEffect, useState } from "react";
 import Slider, { type Settings } from "react-slick";
 import "./News.css";
 import axios from "axios";
 import { convertTimeStampToDate } from "../../utils/convertTime";
 import { NavLink } from "react-router";
+import { getAllNews } from "../../queries";
 
 const Card = ({
   text,
@@ -55,21 +56,16 @@ const NewsComponent = () => {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
   useEffect(() => {
-    axios
-      .get(
-        import.meta.env.VITE_APPLICATION_API_LINK + "public/news/get_all",
-        {}
-      )
-      .then((res) => {
-        if (res.data.length === 2 || res.data.length === 3) {
-          setNewsData(() => [
-            ...(res.data.reverse() as NewsItem[]),
-            ...(res.data.reverse() as NewsItem[]),
-          ]);
-        } else {
-          setNewsData(res.data.reverse() as NewsItem[]);
-        }
-      });
+    getAllNews(initData.user()?.id.toString()).then((res) => {
+      if (res.data.length === 2 || res.data.length === 3) {
+        setNewsData(() => [
+          ...(res.data.reverse() as NewsItem[]),
+          ...(res.data.reverse() as NewsItem[]),
+        ]);
+      } else {
+        setNewsData(res.data.reverse() as NewsItem[]);
+      }
+    });
   }, []);
 
   const settings: Settings = {
