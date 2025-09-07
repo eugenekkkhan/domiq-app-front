@@ -1,6 +1,7 @@
 import { initData, themeParams } from "@telegram-apps/sdk";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Slider, { type Settings } from "react-slick";
+import type { default as SlickSlider } from "react-slick";
 import "./News.css";
 import { convertTimeStampToDate } from "../../utils/convertTime";
 import { NavLink } from "react-router";
@@ -52,23 +53,28 @@ type NewsItem = {
 
 const NewsComponent = () => {
   const [newsData, setNewsData] = useState<NewsItem[]>([]);
+  const [uniqueItems, setUniqueItems] = useState<NewsItem[]>([]);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const sliderRef = useRef<SlickSlider | null>(null);
 
   useEffect(() => {
     getAllNews(initData.user()?.id.toString()).then((res) => {
-      if (res.data.length === 2 || res.data.length === 3) {
-        setNewsData(() => [
-          ...(res.data.reverse() as NewsItem[]),
-          ...(res.data.reverse() as NewsItem[]),
-        ]);
-      } else {
-        setNewsData(res.data.reverse() as NewsItem[]);
+      const incoming = (res.data as NewsItem[]) || [];
+      const normalized = incoming.slice().reverse(); // avoid mutating res.data
+      setUniqueItems(normalized);
+
+      let list = normalized;
+      if (normalized.length > 0 && normalized.length <= 3) {
+        const minSlidesForInfinite = 4; // must be > slidesToShow (3)
+        const repeats = Math.ceil(minSlidesForInfinite / normalized.length);
+        list = Array.from({ length: repeats }).flatMap(() => normalized);
       }
+      setNewsData(list);
     });
   }, []);
 
   const settings: Settings = {
-    dots: true,
+    dots: uniqueItems.length > 3, // use slick dots only when >3 unique items
     infinite: true,
     speed: 500,
     slidesToShow: 3,
@@ -96,6 +102,14 @@ const NewsComponent = () => {
     afterChange: (newIndex) => setCurrentSlideIndex(newIndex),
   };
 
+  // Map current slick index to logical unique item index (by ID)
+  const activeLogicalIndex = (() => {
+    const current = newsData[currentSlideIndex];
+    if (!current) return 0;
+    const idx = uniqueItems.findIndex((u) => u.ID === current.ID);
+    return idx >= 0 ? idx : 0;
+  })();
+
   return (
     <div
       style={{
@@ -114,9 +128,9 @@ const NewsComponent = () => {
           position: "absolute",
         }}
       >
-        <Slider {...settings}>
-          {newsData.map((item) => (
-            <div>
+        <Slider ref={sliderRef} {...settings}>
+          {newsData.map((item, index) => (
+            <div key={`${item.ID}-${index}`}>
               <Card
                 date={item.CreatedAt}
                 text={
@@ -127,6 +141,39 @@ const NewsComponent = () => {
             </div>
           ))}
         </Slider>
+
+        {(uniqueItems.length === 2 || uniqueItems.length === 3) && (
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              gap: "8px",
+              marginTop: "8px",
+            }}
+          >
+            {uniqueItems.map((it, i) => (
+              <div
+                key={`dot-${it.ID}-${i}`}
+                onClick={() => {
+                  const targetIndex = newsData.findIndex((n) => n.ID === it.ID);
+                  if (targetIndex >= 0) {
+                    sliderRef.current?.slickGoTo(targetIndex);
+                  }
+                }}
+                style={{
+                  width: "8px",
+                  height: "8px",
+                  borderRadius: "100%",
+                  backgroundColor:
+                    i === activeLogicalIndex
+                      ? themeParams.textColor()
+                      : themeParams.sectionSeparatorColor(),
+                  cursor: "pointer",
+                }}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
