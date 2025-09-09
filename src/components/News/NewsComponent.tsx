@@ -1,4 +1,4 @@
-import { initData, themeParams } from "@telegram-apps/sdk";
+import { initData, themeParams, miniApp } from "@telegram-apps/sdk";
 import { useEffect, useRef, useState } from "react";
 import Slider, { type Settings } from "react-slick";
 import type { default as SlickSlider } from "react-slick";
@@ -6,6 +6,10 @@ import "./News.css";
 import { convertTimeStampToDate } from "../../utils/convertTime";
 import { NavLink } from "react-router";
 import { getAllNews } from "../../queries";
+import Markdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
+import rehypeRaw from "rehype-raw";
 
 const Card = ({
   text,
@@ -39,7 +43,64 @@ const Card = ({
         >
           {date && convertTimeStampToDate(date)}
         </p>
-        <p style={{ color: themeParams.textColor() }}>{text}</p>
+        <div style={{ color: themeParams.textColor() }}>
+          <Markdown
+            children={text?.replace(/\\n/gi, "\n")}
+            rehypePlugins={[rehypeRaw]}
+            remarkPlugins={[remarkGfm, remarkBreaks]}
+            components={{
+              a: (props) => {
+                const href =
+                  typeof props.href === "string" ? props.href.trim() : "";
+                const isEmpty =
+                  !href || href === "#" || href === "javascript:void(0)";
+
+                if (isEmpty) {
+                  // Render a non-interactive element for empty links
+                  return (
+                    <span
+                      style={{
+                        color: themeParams.linkColor(),
+                        textDecoration: "underline",
+                        cursor: "default",
+                      }}
+                    >
+                      {props.children}
+                    </span>
+                  );
+                }
+
+                const onClick: React.MouseEventHandler<HTMLAnchorElement> = (
+                  e
+                ) => {
+                  e.preventDefault();
+                  try {
+                    if ((miniApp as any).openLink?.isAvailable?.()) {
+                      (miniApp as any).openLink(href);
+                    } else if ((window as any).Telegram?.WebApp?.openLink) {
+                      (window as any).Telegram.WebApp.openLink(href);
+                    } else {
+                      window.open(href, "_blank", "noopener,noreferrer");
+                    }
+                  } catch {
+                    window.open(href, "_blank", "noopener,noreferrer");
+                  }
+                };
+
+                return (
+                  <a
+                    {...props}
+                    href={href}
+                    onClick={onClick}
+                    style={{ color: themeParams.linkColor() }}
+                    target={"_blank"}
+                    rel={"noopener noreferrer"}
+                  />
+                );
+              },
+            }}
+          />
+        </div>
       </div>
     </NavLink>
   );
