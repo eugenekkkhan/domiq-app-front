@@ -14,6 +14,7 @@ export default function EditVideo({ video }: { video: Video }) {
   const [form, setForm] = useState({
     name: video.name,
     videoLink: video.source,
+    thumbnailLink: video.thumbnail || "",
   });
 
   const handleChange = (
@@ -27,26 +28,42 @@ export default function EditVideo({ video }: { video: Video }) {
     setForm({
       name: video.name,
       videoLink: video.source,
+      thumbnailLink: video.thumbnail || "",
     });
   };
 
   const [file, setFile] = useState<File | null>(null);
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
 
   function handleChangeFile(event: File | null) {
     setFile(event);
   }
+  const handleThumbnailChangeFile = (event: File | null) => {
+    setThumbnailFile(event);
+  };
 
   useEffect(() => {
     if (file) {
       uploadMedia(file).then((response) => {
-        setForm({
-          ...form,
+        setForm((prev) => ({
+          ...prev,
           videoLink: response.data,
-        });
+        }));
         setFile(null);
       });
     }
   }, [file]);
+  useEffect(() => {
+    if (thumbnailFile) {
+      uploadMedia(thumbnailFile).then((response) => {
+        setForm((prev) => ({
+          ...prev,
+          thumbnailLink: response.data,
+        }));
+        setThumbnailFile(null);
+      });
+    }
+  }, [thumbnailFile]);
 
   return (
     <>
@@ -78,8 +95,25 @@ export default function EditVideo({ video }: { video: Video }) {
             form.videoLink && `Загруженное видео: ${form.videoLink.slice(7)}`
           }
         />
+        <MuiFileInput
+          label="Добавление превью (thumbnail)"
+          placeholder="Выберите изображение превью"
+          value={thumbnailFile}
+          onChange={(e) => handleThumbnailChangeFile(e)}
+          helperText={
+            form.thumbnailLink &&
+            `Загруженное превью: ${form.thumbnailLink.slice(7)}`
+          }
+        />
+        {form.thumbnailLink && (
+          <img
+            src={import.meta.env.VITE_API_LINK + form.thumbnailLink}
+            style={{ maxWidth: "200px", borderRadius: 8 }}
+            alt="preview"
+          />
+        )}
         <div style={{ display: "flex", justifyContent: "end", gap: "8px" }}>
-          {(form.name !== video.name || form.videoLink !== video.source) && (
+          {(form.name !== video.name || form.videoLink !== video.source || form.thumbnailLink !== (video.thumbnail || "")) && (
             <Button
               variant="outlined"
               onClick={() => {
@@ -92,7 +126,9 @@ export default function EditVideo({ video }: { video: Video }) {
           <Button
             variant="contained"
             disabled={
-              form.name === video.name && form.videoLink === video.source
+              form.name === video.name &&
+              form.videoLink === video.source &&
+              form.thumbnailLink === (video.thumbnail || "")
             }
             onClick={() => {
               updateVideo({
@@ -100,7 +136,7 @@ export default function EditVideo({ video }: { video: Video }) {
                 name: form.name,
                 videoLink: form.videoLink,
                 CreatedAt: video.CreatedAt || "",
-                thumbnail: video.thumbnail,
+                thumbnail: "/media/1757840378.png",
                 duration: video.duration,
               }).then(() => {
                 resetData();

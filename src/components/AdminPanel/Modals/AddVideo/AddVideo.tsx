@@ -13,6 +13,7 @@ export default function AddVideo() {
   const [form, setForm] = useState({
     name: "",
     videoLink: "",
+    thumbnailLink: "",
   });
 
   const handleChange = (
@@ -26,26 +27,42 @@ export default function AddVideo() {
     setForm({
       name: "",
       videoLink: "",
+      thumbnailLink: "",
     });
   };
 
   const [file, setFile] = useState<File | null>(null);
+  const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
 
   function handleChangeFile(event: File | null) {
     setFile(event);
   }
+  const handleThumbnailChangeFile = (event: File | null) => {
+    setThumbnailFile(event);
+  };
 
   useEffect(() => {
     if (file) {
       uploadMedia(file).then((response) => {
-        setForm({
-          ...form,
+        setForm((prev) => ({
+          ...prev,
           videoLink: response.data,
-        });
+        }));
         setFile(null);
       });
     }
   }, [file]);
+  useEffect(() => {
+    if (thumbnailFile) {
+      uploadMedia(thumbnailFile).then((response) => {
+        setForm((prev) => ({
+          ...prev,
+          thumbnailLink: response.data,
+        }));
+        setThumbnailFile(null);
+      });
+    }
+  }, [thumbnailFile]);
 
   return (
     <>
@@ -77,6 +94,23 @@ export default function AddVideo() {
             form.videoLink && `Загруженное видео: ${form.videoLink.slice(7)}`
           }
         />
+        <MuiFileInput
+          label="Добавление превью (thumbnail)"
+          placeholder="Выберите изображение превью"
+          value={thumbnailFile}
+          onChange={(e) => handleThumbnailChangeFile(e)}
+          helperText={
+            form.thumbnailLink &&
+            `Загруженное превью: ${form.thumbnailLink.slice(7)}`
+          }
+        />
+        {form.thumbnailLink && (
+          <img
+            src={import.meta.env.VITE_API_LINK + form.thumbnailLink}
+            style={{ maxWidth: "200px", borderRadius: 8 }}
+            alt="preview"
+          />
+        )}
         <div style={{ display: "flex", justifyContent: "end", gap: "8px" }}>
           {(form.name || form.videoLink) && (
             <Button
@@ -95,6 +129,7 @@ export default function AddVideo() {
               createVideo({
                 name: form.name,
                 videoLink: form.videoLink,
+                thumbnailLink: form.thumbnailLink,
               }).then(() => {
                 resetData();
                 handleClose();

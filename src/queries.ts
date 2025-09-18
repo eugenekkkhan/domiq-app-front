@@ -151,15 +151,18 @@ const sendMailing = (message: string) =>
 const createVideo = ({
   name,
   videoLink,
+  thumbnailLink,
 }: {
   name: string;
   videoLink: string;
+  thumbnailLink?: string;
 }) =>
   axios.post(
     import.meta.env.VITE_APPLICATION_API_LINK + "private/videos/create_video",
     {
       name,
       source: videoLink,
+      thumbnail: thumbnailLink || "",
     },
     { headers: { Authorization: "Basic " + getCookie("token") } }
   );
