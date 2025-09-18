@@ -136,7 +136,7 @@ export default function EditVideo({ video }: { video: Video }) {
                 name: form.name,
                 videoLink: form.videoLink,
                 CreatedAt: video.CreatedAt || "",
-                thumbnail: "/media/1757840378.png",
+                thumbnail: form.thumbnailLink,
                 duration: video.duration,
               }).then(() => {
                 resetData();
