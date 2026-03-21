@@ -20,7 +20,7 @@ const App = () => {
       <MainMenu />
       <ButtonMain
         Icon={ChatBubbleRoundedIcon}
-        text="Связь с оператором"
+        text="Связь с оператором (MAX)"
         color="#34C759"
         onClick={() => {
           location.href = "https://t.me/D0M_IQ";
@@ -29,6 +29,23 @@ const App = () => {
           flexDirection: "row",
           alignItems: "center",
           justifyContent: "center",
+          width: "100%",
+          padding: "24px",
+          gap: "8px",
+        }}
+      />
+      <ButtonMain
+        Icon={ChatBubbleRoundedIcon}
+        text="Связь с оператором (Telegram)"
+        color="#34C759"
+        onClick={() => {
+          location.href = "https://t.me/D0M_IQ";
+        }}
+        style={{
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+          width: "100%",
           padding: "24px",
           gap: "8px",
         }}
