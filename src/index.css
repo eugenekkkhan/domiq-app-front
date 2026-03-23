@@ -10,6 +10,12 @@
   src: url("./assets/fonts/SF-Pro-Display-Bold.woff");
 }
 
+@font-face {
+  font-family: "SF Pro";
+  font-style: italic;
+  src: url("./assets/fonts/SF-Pro-Text-Regular-Italic.woff");
+}
+
 :root {
   font-family: "SF Pro", serif;
   color-scheme: light dark;

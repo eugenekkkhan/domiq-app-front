@@ -61,7 +61,7 @@ const Content = () => {
                         <span
                           style={{
                             color: themeParams.linkColor(),
-                            textDecoration: "underline",
+                            //textDecoration: "underline",
                             cursor: "default",
                           }}
                         >
