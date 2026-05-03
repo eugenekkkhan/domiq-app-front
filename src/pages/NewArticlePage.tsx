@@ -6,6 +6,8 @@ import { convertTimeStampToDate } from "../utils/convertTime";
 import { imageUrl } from "../utils/media";
 import PublicLayout from "../components/PublicLayout/PublicLayout";
 import MarkdownView from "../components/MarkdownView/MarkdownView";
+import { PageSpinner } from "../components/Spinner/Spinner";
+import SkeletonImg from "../components/SkeletonImg/SkeletonImg";
 
 const NewArticlePage = () => {
   const { articleId } = useParams<{ articleId: string }>();
@@ -18,14 +20,14 @@ const NewArticlePage = () => {
   return (
     <PublicLayout showBack>
       {isLoading || !news ? (
-        <p className="text-sm text-gray-400 text-center py-8">Загрузка…</p>
+        <PageSpinner />
       ) : (
         <>
           {news.preview_image && (
-            <img
+            <SkeletonImg
               src={imageUrl(news.preview_image, "large")}
               alt={news.title}
-              className="w-full rounded-2xl object-cover max-h-64"
+              className="w-full rounded-inner max-h-64"
             />
           )}
           <div className="flex flex-col gap-1">

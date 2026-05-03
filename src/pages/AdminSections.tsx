@@ -33,10 +33,18 @@ const AdminSections = () => {
         )}
         <AddSection onSaved={load} />
       </div>
-      {filtered.map((section) => (
-        <SectionCard key={section.id} section={section} onDelete={load} />
-      ))}
-      {filtered.length === 0 && (
+      {filtered.length > 0 ? (
+        <div className="card overflow-hidden">
+          {filtered.map((section, i) => (
+            <SectionCard
+              key={section.id}
+              section={section}
+              onDelete={load}
+              isLast={i === filtered.length - 1}
+            />
+          ))}
+        </div>
+      ) : (
         <p className="text-sm text-gray-400 text-center py-8">Разделы не найдены</p>
       )}
     </AdminPage>

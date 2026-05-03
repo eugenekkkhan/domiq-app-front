@@ -72,7 +72,7 @@ export default function EditNews({ id, onSaved }: { id: number; onSaved: () => v
             <img
               src={imageUrl(previewImage, "thumbnail")}
               alt="preview"
-              className="h-10 rounded-lg object-cover"
+              className="h-10 rounded-inner object-cover"
             />
           )}
         </div>

@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getSection, getSectionChildren, getArticlesBySection } from "../queries";
 import type { Section } from "../types/Section";
 import type { Article } from "../types/Article";
+import { PageSpinner } from "../components/Spinner/Spinner";
 import { ChevronRight } from "lucide-react";
 import PublicLayout from "../components/PublicLayout/PublicLayout";
 
@@ -31,35 +32,30 @@ const SectionPage = () => {
   return (
     <PublicLayout showBack>
       {isLoading || !section ? (
-        <p className="text-sm text-gray-400 text-center py-8">Загрузка…</p>
+        <PageSpinner />
       ) : (
         <>
           <h1 className="text-2xl font-bold">{section.name}</h1>
 
-          {children.length > 0 && (
+          {children.length > 0 || articles.length > 0 ? (
             <div className="card overflow-hidden">
               {children.map((child, i) => (
                 <NavLink
                   key={child.id}
                   to={`/sections/${child.id}`}
-                  className={`flex items-center justify-between px-4 py-4 ${
-                    i < children.length - 1 ? "border-b border-gray-100" : ""
+                  className={`flex items-center justify-between p-[var(--spacing-card)] ${
+                    i < children.length - 1 || articles.length > 0 ? "border-b border-gray-100" : ""
                   }`}
                 >
                   <span className="text-[15px]">{child.name}</span>
                   <ChevronRight size={18} className="text-gray-300" />
                 </NavLink>
               ))}
-            </div>
-          )}
-
-          {articles.length > 0 && (
-            <div className="card overflow-hidden">
               {articles.map((article, i) => (
                 <NavLink
                   key={article.id}
                   to={`/articles/${article.id}`}
-                  className={`flex items-center justify-between px-4 py-4 ${
+                  className={`flex items-center justify-between p-[var(--spacing-card)] ${
                     i < articles.length - 1 ? "border-b border-gray-100" : ""
                   }`}
                 >
@@ -68,9 +64,7 @@ const SectionPage = () => {
                 </NavLink>
               ))}
             </div>
-          )}
-
-          {children.length === 0 && articles.length === 0 && (
+          ) : (
             <p className="text-sm text-gray-400 text-center py-8">Раздел пуст</p>
           )}
         </>

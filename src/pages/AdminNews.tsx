@@ -36,10 +36,13 @@ const AdminNews = () => {
         )}
         <AddNews onSaved={load} />
       </div>
-      {filtered.map((item) => (
-        <NewsCard key={item.id} news={item} onDelete={load} />
-      ))}
-      {filtered.length === 0 && (
+      {filtered.length > 0 ? (
+        <div className="card overflow-hidden">
+          {filtered.map((item, i) => (
+            <NewsCard key={item.id} news={item} onDelete={load} isLast={i === filtered.length - 1} />
+          ))}
+        </div>
+      ) : (
         <p className="text-sm text-gray-400 text-center py-8">Новости не найдены</p>
       )}
     </AdminPage>

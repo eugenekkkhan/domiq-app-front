@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getToken } from "./utils/auth";
+import { getToken, removeToken } from "./utils/auth";
 
 const BASE = import.meta.env.VITE_API_URL as string;
 
@@ -10,6 +10,16 @@ api.interceptors.request.use((config) => {
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
+api.interceptors.response.use(
+  (res) => res,
+  (err) => {
+    if (err.response?.status === 401) {
+      removeToken();
+      window.location.href = "/admin";
+    }
+    return Promise.reject(err);
+  }
+);
 
 // ---------- Auth ----------
 

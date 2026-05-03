@@ -2,20 +2,18 @@ import type { Video } from "../../../types/video";
 import { imageUrl, mediaUrl } from "../../../utils/media";
 import { secsToMins, convertTimeStampToDate } from "../../../utils/convertTime";
 import PlayerModal from "../Modals/PlayerModal/PlayerModal";
+import SkeletonImg from "../../SkeletonImg/SkeletonImg";
 
-const VideoCard = ({ video }: { video: Video }) => {
-  const thumbnail = video.thumbnail_image
-    ? imageUrl(video.thumbnail_image, "thumbnail")
-    : null;
+const VideoCard = ({ video, isLast }: { video: Video; isLast: boolean }) => {
   const videoSrc = mediaUrl(video.bucket, video.object_key);
 
   return (
-    <div className="card flex items-center gap-3 p-3">
+    <div className={`flex items-center gap-3 p-[var(--spacing-card)] ${!isLast ? "border-b border-gray-100" : ""}`}>
       <PlayerModal video={video}>
-        <img
-          src={thumbnail ?? undefined}
+        <SkeletonImg
+          src={video.thumbnail_image ? imageUrl(video.thumbnail_image, "thumbnail") : undefined}
           alt={video.name}
-          className="w-40 h-[90px] rounded-lg object-cover bg-gray-900"
+          className="w-40 h-[90px] rounded-inner bg-gray-900"
         />
       </PlayerModal>
       <div className="flex flex-col gap-0.5 min-w-0 flex-1">

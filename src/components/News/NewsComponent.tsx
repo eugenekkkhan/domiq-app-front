@@ -6,22 +6,27 @@ import { getNews } from "../../queries";
 import type { News } from "../../types/NewArticle";
 import { convertTimeStampToDate } from "../../utils/convertTime";
 import { imageUrl } from "../../utils/media";
+import SkeletonImg from "../SkeletonImg/SkeletonImg";
 
 const NewsCard = ({ item, fixed }: { item: News; fixed?: boolean }) => (
   <NavLink to={`/news/${item.id}`} className={fixed ? "h-full" : ""}>
-    <div className={`card p-4 flex flex-col gap-1.5 ${fixed ? "h-full justify-between" : "hover:shadow-md transition-shadow gap-2"}`}>
+    <div
+      className={`card p-6 flex flex-col gap-1 ${fixed ? "h-full justify-between" : "hover:shadow-md transition-shadow"}`}
+    >
       {item.preview_image && !fixed && (
-        <img
+        <SkeletonImg
           src={imageUrl(item.preview_image, "medium")}
           alt={item.title}
-          className="w-full h-36 object-cover rounded-xl"
+          className="w-full h-28 rounded-inner"
         />
       )}
       <p className="text-xs text-gray-400 font-medium">
         {convertTimeStampToDate(item.created_at)}
       </p>
-      <h3 className="font-semibold text-[15px] leading-snug line-clamp-2">{item.title}</h3>
-      <p className="text-sm text-gray-500 leading-relaxed line-clamp-3">{item.short}</p>
+      <h3 className="font-semibold text-sm leading-snug line-clamp-2">
+        {item.title}
+      </h3>
+      <p className="text-xs text-gray-500 truncate">{item.short}</p>
     </div>
   </NavLink>
 );
@@ -39,7 +44,10 @@ const NewsScroll = ({ news }: { news: News[] }) => {
   };
 
   const scrollBy = (dir: 1 | -1) => {
-    ref.current?.scrollBy({ left: dir * (ref.current.offsetWidth / 2 + 6), behavior: "smooth" });
+    ref.current?.scrollBy({
+      left: dir * (ref.current.offsetWidth / 2 + 6),
+      behavior: "smooth",
+    });
   };
 
   return (
@@ -50,7 +58,10 @@ const NewsScroll = ({ news }: { news: News[] }) => {
         className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-none"
       >
         {news.map((item) => (
-          <div key={item.id} className="snap-start shrink-0 w-[calc(50%-6px)] h-[148px]">
+          <div
+            key={item.id}
+            className="snap-start shrink-0 w-[calc(50%-6px)] h-[116px]"
+          >
             <NewsCard item={item} fixed />
           </div>
         ))}
@@ -76,21 +87,29 @@ const NewsScroll = ({ news }: { news: News[] }) => {
   );
 };
 
-const NewsComponent = ({ limit, scroll }: { limit?: number; scroll?: boolean }) => {
+const NewsComponent = ({
+  limit,
+  scroll,
+}: {
+  limit?: number;
+  scroll?: boolean;
+}) => {
   const { data } = useQuery({
     queryKey: ["news"],
-    queryFn: () => getNews().then((r) => (r.data as News[]).sort(
-      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-    )),
+    queryFn: () =>
+      getNews().then((r) =>
+        (r.data as News[]).sort(
+          (a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+        ),
+      ),
   });
 
   const news = data ? (limit ? data.slice(0, limit) : data) : [];
 
   if (news.length === 0) return null;
 
-  if (scroll) {
-    return <NewsScroll news={news} />;
-  }
+  if (scroll) return <NewsScroll news={news} />;
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

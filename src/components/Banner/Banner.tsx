@@ -5,7 +5,7 @@ const Banner = () => {
   return (
     <NavLink to="/videos">
       <div
-        className="relative rounded-2xl overflow-hidden flex items-center"
+        className="relative rounded-outer overflow-hidden flex items-center"
         style={{
           height: "132px",
           background: "radial-gradient(circle at 90% 135%, #007aff, #003f99 55%)",

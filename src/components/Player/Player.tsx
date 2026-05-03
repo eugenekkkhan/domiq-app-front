@@ -4,6 +4,7 @@ import { useParams } from "react-router";
 import { getVideo } from "../../queries";
 import type { Video } from "../../types/video";
 import { mediaUrl } from "../../utils/media";
+import Spinner from "../Spinner/Spinner";
 
 const PlayerComponent = () => {
   const { videoId } = useParams<{ videoId: string }>();
@@ -16,7 +17,7 @@ const PlayerComponent = () => {
   if (isLoading || !video) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <p className="text-white text-sm">Загрузка…</p>
+        <Spinner size={36} white />
       </div>
     );
   }

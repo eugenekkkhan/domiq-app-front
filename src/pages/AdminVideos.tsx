@@ -36,10 +36,13 @@ const AdminVideos = () => {
       <p className="text-xs text-gray-400">
         Видео можно только загружать — редактирование и удаление недоступны в текущей версии API.
       </p>
-      {filtered.map((video) => (
-        <VideoCard key={video.id} video={video} />
-      ))}
-      {filtered.length === 0 && (
+      {filtered.length > 0 ? (
+        <div className="card overflow-hidden">
+          {filtered.map((video, i) => (
+            <VideoCard key={video.id} video={video} isLast={i === filtered.length - 1} />
+          ))}
+        </div>
+      ) : (
         <p className="text-sm text-gray-400 text-center py-8">Видео не найдены</p>
       )}
     </AdminPage>

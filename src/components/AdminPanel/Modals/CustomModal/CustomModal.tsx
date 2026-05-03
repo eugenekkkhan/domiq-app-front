@@ -31,7 +31,7 @@ export default function CustomModal({
         if (e.target === overlayRef.current) onClose();
       }}
     >
-      <div className="card w-full max-w-xl max-h-[90vh] overflow-y-auto p-4 flex flex-col gap-3 shadow-xl">
+      <div className="card w-full max-w-xl max-h-[90vh] overflow-y-auto p-[var(--spacing-card)] flex flex-col gap-3 shadow-xl">
         {children}
       </div>
     </div>

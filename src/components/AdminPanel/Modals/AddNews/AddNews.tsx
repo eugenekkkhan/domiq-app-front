@@ -60,7 +60,7 @@ export default function AddNews({ onSaved }: { onSaved: () => void }) {
             <img
               src={imageUrl(previewImage, "thumbnail")}
               alt="preview"
-              className="h-10 rounded-lg object-cover"
+              className="h-10 rounded-inner object-cover"
             />
           )}
         </div>

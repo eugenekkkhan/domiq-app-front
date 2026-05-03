@@ -5,6 +5,7 @@ import type { Article } from "../types/Article";
 import { convertTimeStampToDate } from "../utils/convertTime";
 import PublicLayout from "../components/PublicLayout/PublicLayout";
 import MarkdownView from "../components/MarkdownView/MarkdownView";
+import { PageSpinner } from "../components/Spinner/Spinner";
 
 const ArticlePage = () => {
   const { articleId } = useParams<{ articleId: string }>();
@@ -17,7 +18,7 @@ const ArticlePage = () => {
   return (
     <PublicLayout showBack>
       {isLoading || !article ? (
-        <p className="text-sm text-gray-400 text-center py-8">Загрузка…</p>
+        <PageSpinner />
       ) : (
         <>
           <div className="flex flex-col gap-1">

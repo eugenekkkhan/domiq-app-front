@@ -33,10 +33,13 @@ const AdminArticles = () => {
         )}
         <AddArticle onSaved={load} />
       </div>
-      {filtered.map((article) => (
-        <ArticleCard key={article.id} article={article} onDelete={load} />
-      ))}
-      {filtered.length === 0 && (
+      {filtered.length > 0 ? (
+        <div className="card overflow-hidden">
+          {filtered.map((article, i) => (
+            <ArticleCard key={article.id} article={article} onDelete={load} isLast={i === filtered.length - 1} />
+          ))}
+        </div>
+      ) : (
         <p className="text-sm text-gray-400 text-center py-8">Статьи не найдены</p>
       )}
     </AdminPage>

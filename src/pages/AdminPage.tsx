@@ -6,7 +6,7 @@ const AdminPage = ({ children }: { children: ReactNode }) => {
     <div className="min-h-screen bg-[#efeff4]">
       <AdminPageNavbar />
       {/* md: offset for sidebar, mobile: offset for top bar */}
-      <main className="md:ml-52 pt-14 md:pt-0 p-4 flex flex-col gap-3 max-w-4xl">
+      <main className="md:ml-52 pt-18 md:pt-4 p-4 flex flex-col gap-3 max-w-4xl">
         {children}
       </main>
     </div>

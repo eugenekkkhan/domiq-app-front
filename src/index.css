@@ -17,6 +17,9 @@
   --color-primary: #007aff;
   --color-danger: #ff3b30;
   --color-success: #34c759;
+  --radius-outer: 24px;
+  --radius-inner: 12px;
+  --spacing-card: 12px;
 }
 
 html,
@@ -58,7 +61,7 @@ h1, h2, h3, h4, h5, h6 {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border-radius: 0.75rem;
+    border-radius: var(--radius-inner);
     padding: 0.5rem 1rem;
     font-size: 0.875rem;
     font-weight: 500;
@@ -86,7 +89,7 @@ h1, h2, h3, h4, h5, h6 {
   .btn-secondary {
     background-color: transparent;
     color: #007aff;
-    border: 1.5px solid #007aff;
+    box-shadow: inset 0 0 0 1.5px #007aff;
   }
   .btn-secondary:hover:not(:disabled) {
     background-color: rgba(0, 122, 255, 0.06);
@@ -99,7 +102,7 @@ h1, h2, h3, h4, h5, h6 {
   .btn-danger {
     background-color: transparent;
     color: #ff3b30;
-    border: 1.5px solid #ff3b30;
+    box-shadow: inset 0 0 0 1.5px #ff3b30;
   }
   .btn-danger:hover:not(:disabled) {
     background-color: rgba(255, 59, 48, 0.06);
@@ -107,14 +110,15 @@ h1, h2, h3, h4, h5, h6 {
 
   .card {
     background-color: #ffffff;
-    border-radius: 1.25rem;
+    border-radius: var(--radius-outer);
+    overflow: hidden;
   }
 
   .input {
     width: 100%;
     background-color: #ffffff;
     border: 1.5px solid #c8c7cc;
-    border-radius: 0.75rem;
+    border-radius: var(--radius-inner);
     padding: 0.5rem 0.75rem;
     font-size: 0.875rem;
     outline: none;
@@ -137,7 +141,7 @@ h1, h2, h3, h4, h5, h6 {
   }
   .prose-md img {
     width: 100%;
-    border-radius: 16px;
+    border-radius: var(--radius-inner);
   }
   .prose-md a {
     text-decoration: underline;
@@ -164,7 +168,7 @@ h1, h2, h3, h4, h5, h6 {
   }
   .prose-md pre {
     background: #f2f2f7;
-    border-radius: 10px;
+    border-radius: var(--radius-inner);
     padding: 1rem;
     overflow-x: auto;
   }

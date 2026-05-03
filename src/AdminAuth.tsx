@@ -22,7 +22,7 @@ const AdminAuth = () => {
 
   return (
     <div className="min-h-screen bg-[#efeff4] flex items-center justify-center p-4">
-      <div className="card p-6 w-full max-w-sm flex flex-col gap-4 shadow-sm">
+      <div className="card p-[var(--spacing-card)] w-full max-w-sm flex flex-col gap-3 shadow-sm">
         <h1 className="text-2xl font-bold text-center">Вход</h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <input

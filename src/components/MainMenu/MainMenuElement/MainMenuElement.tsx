@@ -11,7 +11,7 @@ const MainMenuElement = ({ text, to, isLast = false }: MainMenuElementProps) => 
   return (
     <NavLink to={to}>
       <div
-        className={`flex items-center justify-between py-4 px-4 ${
+        className={`flex items-center justify-between p-[var(--spacing-card)] ${
           !isLast ? "border-b border-gray-100" : ""
         }`}
       >

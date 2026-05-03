@@ -35,9 +35,9 @@ const SidebarContent = ({ onNav }: { onNav?: () => void }) => {
             to={to}
             onClick={onNav}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+              `flex items-center gap-3 px-3 py-2.5 rounded-inner text-sm font-medium transition-colors ${
                 isActive
-                  ? "bg-primary text-white"
+                  ? "bg-[#efeff4] text-primary"
                   : "text-gray-700 hover:bg-gray-100"
               }`
             }
@@ -50,7 +50,7 @@ const SidebarContent = ({ onNav }: { onNav?: () => void }) => {
       <div className="p-3 border-t border-gray-200">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-danger hover:bg-red-50 transition-colors cursor-pointer"
+          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-inner text-sm font-medium text-danger hover:bg-red-50 transition-colors cursor-pointer"
         >
           <LogOut size={17} />
           Выйти

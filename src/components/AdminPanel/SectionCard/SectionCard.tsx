@@ -6,9 +6,11 @@ import EditSection from "../Modals/EditSection/EditSection";
 const SectionCard = ({
   section,
   onDelete,
+  isLast,
 }: {
   section: Section;
   onDelete: () => void;
+  isLast: boolean;
 }) => {
   const [removing, setRemoving] = useState(false);
 
@@ -21,8 +23,8 @@ const SectionCard = ({
   if (removing) return null;
 
   return (
-    <div className="card flex items-center justify-between p-3 gap-3">
-      <div className="flex flex-col gap-0.5 min-w-0">
+    <div className={`flex items-center justify-between p-[var(--spacing-card)] gap-3 ${!isLast ? "border-b border-gray-100" : ""}`}>
+      <div className="flex flex-col gap-0.5 min-w-0 flex-1">
         <span className="font-medium text-sm truncate">{section.name}</span>
         <span className="text-xs text-gray-400">
           ID: {section.id}

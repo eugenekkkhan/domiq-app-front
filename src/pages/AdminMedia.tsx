@@ -3,6 +3,7 @@ import { getMedia, uploadImage } from "../queries";
 import type { Image } from "../types/Image";
 import { imageUrl } from "../utils/media";
 import AdminPage from "./AdminPage";
+import SkeletonImg from "../components/SkeletonImg/SkeletonImg";
 
 const AdminMedia = () => {
   const [images, setImages] = useState<Image[]>([]);
@@ -36,10 +37,10 @@ const AdminMedia = () => {
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {images.map((img) => (
           <div key={img.id} className="card overflow-hidden">
-            <img
+            <SkeletonImg
               src={imageUrl(img, "medium")}
               alt={img.name}
-              className="w-full aspect-video object-cover"
+              className="w-full aspect-video"
             />
             <div className="p-2">
               <p className="text-xs text-gray-700 truncate font-medium">{img.name}</p>
