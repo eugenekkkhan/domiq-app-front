@@ -1,55 +1,39 @@
 import { useState } from "react";
 import { deleteArticle } from "../../../queries";
-import type { ArtHeader } from "../../../types/ArtHeader";
-import Button from "@mui/material/Button";
+import type { Article } from "../../../types/Article";
 import EditArticle from "../Modals/EditArticle/EditArticle";
-import Stack from "@mui/material/Stack";
 
-const ArticleCard = ({ article }: { article: ArtHeader }) => {
-  const [isRemoved, setIsRemoved] = useState(false);
+const ArticleCard = ({
+  article,
+  onDelete,
+}: {
+  article: Article;
+  onDelete: () => void;
+}) => {
+  const [removing, setRemoving] = useState(false);
+
+  const handleDelete = () => {
+    if (!confirm(`Удалить статью «${article.title}»?`)) return;
+    setRemoving(true);
+    deleteArticle(article.id).then(onDelete).catch(() => setRemoving(false));
+  };
+
+  if (removing) return null;
+
   return (
-    <div
-      style={{
-        display: isRemoved ? "none" : "flex",
-        width: "100%",
-        border: "1px solid #ccc",
-        borderRadius: "16px",
-        justifyContent: "space-between",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "start",
-          padding: "12px",
-        }}
-      >
-        <b>{article.header}</b>
-        <p style={{ fontSize: "0.8em" }}>
-          ID: {article.id} Тип:{" "}
-          {article.type === "article" ? "Статья" : "Раздел"}
-        </p>
+    <div className="card flex items-center justify-between p-3 gap-3">
+      <div className="flex flex-col gap-0.5 min-w-0">
+        <span className="font-medium text-sm truncate">{article.title}</span>
+        <span className="text-xs text-gray-400">
+          ID: {article.id} · Раздел: {article.section_id}
+        </span>
       </div>
-      <Stack
-        direction={{ xs: "column", md: "row" }}
-        minWidth={{ xs: "160px", md: "360px" }}
-        style={{
-          gap: "12px",
-          padding: "12px",
-        }}
-      >
-        <EditArticle id={article.id} />
-        <Button
-          variant="outlined"
-          fullWidth
-          onClick={() =>
-            deleteArticle(article.id.toString()).then(() => setIsRemoved(true))
-          }
-        >
-          удалить
-        </Button>
-      </Stack>
+      <div className="flex gap-2 shrink-0">
+        <EditArticle article={article} onSaved={onDelete} />
+        <button className="btn btn-danger text-xs px-3 py-1.5" onClick={handleDelete}>
+          Удалить
+        </button>
+      </div>
     </div>
   );
 };

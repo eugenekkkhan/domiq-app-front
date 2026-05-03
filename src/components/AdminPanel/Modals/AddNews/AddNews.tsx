@@ -1,66 +1,80 @@
-import Button from "@mui/material/Button";
 import { useState } from "react";
-import { createNews } from "../../../../queries";
+import { createNews, uploadImage } from "../../../../queries";
+import { imageUrl } from "../../../../utils/media";
+import type { Image } from "../../../../types/Image";
 import CustomMDEditor from "../../../CustomMDEditor/CustomMDEditor";
 import CustomModal from "../CustomModal/CustomModal";
 
-export default function AddNews() {
+export default function AddNews({ onSaved }: { onSaved: () => void }) {
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const [initialForm] = useState({
-    content: "",
-    createdAt: "",
-  });
+  const [form, setForm] = useState({ title: "", content: "" });
+  const [previewImage, setPreviewImage] = useState<Image | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const [form, setForm] = useState(initialForm);
+  const reset = () => { setForm({ title: "", content: "" }); setPreviewImage(null); };
 
-  const resetData = () => {
-    setForm(initialForm);
+  const handleImagePick = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    uploadImage(file)
+      .then((res) => setPreviewImage(res.data as Image))
+      .finally(() => setUploading(false));
+    e.target.value = "";
+  };
+
+  const handleSave = () => {
+    if (!form.title) return;
+    setSaving(true);
+    createNews(form.title, form.content, previewImage?.id)
+      .then(() => { reset(); setOpen(false); onSaved(); })
+      .finally(() => setSaving(false));
   };
 
   return (
     <>
-      <Button
-        onClick={handleOpen}
-        variant="contained"
-        disableElevation
-        sx={{ minWidth: "200px" }}
-      >
-        Добавить новость
-      </Button>
-      <CustomModal open={open} onClose={handleClose} fullWidth>
-        <h3>Добавление новости</h3>
+      <button className="btn btn-primary shrink-0" onClick={() => setOpen(true)}>
+        + Новость
+      </button>
+      <CustomModal open={open} onClose={() => setOpen(false)}>
+        <h3 className="font-semibold text-base">Добавить новость</h3>
+        <input
+          className="input"
+          placeholder="Заголовок"
+          value={form.title}
+          onChange={(e) => setForm({ ...form, title: e.target.value })}
+        />
         <CustomMDEditor
           value={form.content}
-          onChange={(value) => setForm({ ...form, content: value as string })}
+          onChange={(v) => setForm({ ...form, content: v })}
+          heightVh={45}
+          minHeight={200}
         />
-
-        <div style={{ display: "flex", justifyContent: "end", gap: "8px" }}>
-          {form.content !== initialForm.content && (
-            <Button
-              variant="outlined"
-              onClick={() => {
-                resetData();
-              }}
-            >
-              Сброс изменений
-            </Button>
+        <div className="flex items-center gap-3">
+          <label className="btn btn-secondary cursor-pointer text-xs">
+            {uploading ? "Загрузка…" : previewImage ? "Сменить превью" : "Добавить превью"}
+            <input type="file" accept="image/*" className="hidden" onChange={handleImagePick} />
+          </label>
+          {previewImage && (
+            <img
+              src={imageUrl(previewImage, "thumbnail")}
+              alt="preview"
+              className="h-10 rounded-lg object-cover"
+            />
           )}
-          <Button
-            variant="contained"
-            disabled={form.content === initialForm.content}
-            onClick={() => {
-              handleClose();
-              createNews({
-                content: form.content,
-              }).then(() => {
-                window.location.reload();
-              });
-            }}
+        </div>
+        <div className="flex justify-end gap-2">
+          {(form.title || form.content) && (
+            <button className="btn btn-secondary" onClick={reset}>Очистить</button>
+          )}
+          <button
+            className="btn btn-primary"
+            disabled={saving || !form.title}
+            onClick={handleSave}
           >
-            Сохранить
-          </Button>
+            {saving ? "Сохраняем…" : "Сохранить"}
+          </button>
         </div>
       </CustomModal>
     </>

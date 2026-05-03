@@ -1,7 +1,8 @@
 import { useState } from "react";
 import ReactPlayer from "react-player";
 import type { Video } from "../../../../types/video";
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import { mediaUrl } from "../../../../utils/media";
+import { Play } from "lucide-react";
 import CustomModal from "../CustomModal/CustomModal";
 
 export default function PlayerModal({
@@ -12,45 +13,30 @@ export default function PlayerModal({
   video: Video;
 }) {
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const url = mediaUrl(video.bucket, video.object_key);
 
   return (
     <>
       <div
-        onClick={handleOpen}
-        style={{
-          cursor: "pointer",
-          position: "relative",
-          width: "160px",
-        }}
+        onClick={() => setOpen(true)}
+        className="relative cursor-pointer w-40 shrink-0"
       >
         {children}
-        <PlayArrowIcon
-          sx={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            color: "rgba(0, 0, 0, 0.5)",
-            backgroundColor: "rgba(255, 255, 255, 1)",
-            borderRadius: "50%",
-            fontSize: "48px",
-          }}
-        />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="bg-white/90 rounded-full p-1.5">
+            <Play size={20} className="text-gray-800" />
+          </div>
+        </div>
       </div>
-      <CustomModal open={open} onClose={handleClose}>
-        <h3>Плеер</h3>
+      <CustomModal open={open} onClose={() => setOpen(false)}>
+        <h3 className="font-semibold text-sm truncate">{video.name}</h3>
         <ReactPlayer
-          width={"100%"}
-          height={"60vh"}
-          style={{
-            background: "#000000",
-            borderRadius: "4px",
-          }}
-          autoPlay
-          src={import.meta.env.VITE_API_LINK + video.source}
+          src={url}
+          width="100%"
+          height="auto"
+          style={{ borderRadius: 8, background: "#000", aspectRatio: "16/9" }}
           controls
+          playing
         />
       </CustomModal>
     </>

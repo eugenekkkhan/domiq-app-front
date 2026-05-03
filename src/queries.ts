@@ -1,281 +1,109 @@
 import axios from "axios";
-import type { ArticleType } from "./types/Article";
-import { getCookie } from "./utils/utils";
+import { getToken } from "./utils/auth";
 
-// const withHeader = axios.create();
-// initData.restore();
-// const userId = initData.user()?.id.toString();
+const BASE = import.meta.env.VITE_API_URL as string;
 
-// withHeader.interceptors.request.use((config) => {
-//   if (userId) {
-//     config.headers = config.headers ?? {};
-//     (config.headers as Record<string, string>)["X-User-ID"] = userId;
-//   }
-//   return config;
-// });
+// Axios instance that injects the JWT token on every request
+const api = axios.create({ baseURL: BASE });
+api.interceptors.request.use((config) => {
+  const token = getToken();
+  if (token) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
-const auth = (username: string, password: string) =>
-  axios.post(
-    import.meta.env.VITE_APPLICATION_API_LINK + "private/auth",
-    {},
-    {
-      headers: {
-        Authorization: "Basic " + btoa(`${username}:${password}`),
-      },
-    }
-  );
+// ---------- Auth ----------
 
-const getAllArticles = () =>
-  axios.get(
-    import.meta.env.VITE_APPLICATION_API_LINK + "public/all_art_headers",
-    {}
-  );
+export const login = (nickname: string, password: string) =>
+  axios.post(`${BASE}/auth/login`, { nickname, password });
 
-//public
-const getAllVideos = () => {
-  return axios.get(
-    import.meta.env.VITE_APPLICATION_API_LINK + "public/pbVideo/get_all_videos"
-  );
+// ---------- Sections ----------
+
+export const getSections = () => axios.get(`${BASE}/sections`);
+export const getSection = (id: number) => axios.get(`${BASE}/sections/${id}`);
+export const getSectionChildren = (id: number) =>
+  axios.get(`${BASE}/sections/${id}/children`);
+export const createSection = (name: string, parentId?: number) =>
+  api.post(`${BASE}/sections`, { name, parent_id: parentId ?? null });
+export const updateSection = (id: number, name: string, parentId?: number) =>
+  api.patch(`${BASE}/sections/${id}`, { name, parent_id: parentId ?? null });
+export const deleteSection = (id: number) =>
+  api.delete(`${BASE}/sections/${id}`);
+
+// ---------- Articles ----------
+
+export const getArticles = () => axios.get(`${BASE}/articles`);
+export const getArticle = (id: number) => axios.get(`${BASE}/articles/${id}`);
+export const getArticlesBySection = (sectionId: number) =>
+  axios.get(`${BASE}/sections/${sectionId}/articles`);
+export const createArticle = (
+  title: string,
+  contentMarkdown: string,
+  sectionId: number
+) => api.post(`${BASE}/articles`, { title, content_markdown: contentMarkdown, section_id: sectionId });
+export const updateArticle = (
+  id: number,
+  title: string,
+  contentMarkdown: string,
+  sectionId: number
+) =>
+  api.patch(`${BASE}/articles/${id}`, {
+    title,
+    content_markdown: contentMarkdown,
+    section_id: sectionId,
+  });
+export const deleteArticle = (id: number) =>
+  api.delete(`${BASE}/articles/${id}`);
+
+// ---------- News ----------
+
+export const getNews = () => axios.get(`${BASE}/news`);
+export const getNewsItem = (id: number) => axios.get(`${BASE}/news/${id}`);
+export const createNews = (
+  title: string,
+  content: string,
+  previewImageId?: number
+) =>
+  api.post(`${BASE}/news`, {
+    title,
+    content,
+    ...(previewImageId !== undefined && { preview_image_id: previewImageId }),
+  });
+export const updateNews = (
+  id: number,
+  title: string,
+  content: string,
+  previewImageId?: number
+) =>
+  api.patch(`${BASE}/news/${id}`, {
+    title,
+    content,
+    ...(previewImageId !== undefined && { preview_image_id: previewImageId }),
+  });
+export const deleteNews = (id: number) => api.delete(`${BASE}/news/${id}`);
+
+// ---------- Media ----------
+
+export const getMedia = (type: "images" | "videos" | "all" = "all") =>
+  axios.get(`${BASE}/media`, { params: { type } });
+export const getImage = (id: number) => axios.get(`${BASE}/images/${id}`);
+export const getVideo = (id: number) => axios.get(`${BASE}/videos/${id}`);
+
+export const uploadImage = (file: File, name?: string) => {
+  const fd = new FormData();
+  fd.append("file", file);
+  if (name) fd.append("name", name);
+  return api.post(`${BASE}/media/images`, fd);
 };
 
-const getVideoData = (source: string) =>
-  axios.get(import.meta.env.VITE_API_LINK + source, {
-    headers: {
-      Accept: "video/mp4;charset=UTF-8",
-    },
-    responseType: "blob",
-  });
-
-const getThumbnailFromVideo = (source: string) =>
-  axios.get(import.meta.env.VITE_API_LINK + source, {
-    responseType: "arraybuffer",
-  });
-
-const createArticle = (article: ArticleType) =>
-  axios.post(
-    import.meta.env.VITE_APPLICATION_API_LINK + "private/create_article",
-    {
-      content: article.content,
-      header: article.header,
-      parent_id: article.parent_id,
-      type: article.type,
-    },
-    { headers: { Authorization: "Basic " + getCookie("token") } }
-  );
-
-const getArticle = (id: string) =>
-  axios.get(import.meta.env.VITE_APPLICATION_API_LINK + "public/get_article", {
-    params: { id },
-  });
-
-const getArticlesByParentId = (id: string) =>
-  axios.get(
-    import.meta.env.VITE_APPLICATION_API_LINK +
-      "public/get_articles_by_parent_id",
-    {
-      params: { id },
-    }
-  );
-
-const getAllSections = () =>
-  axios.get(
-    import.meta.env.VITE_APPLICATION_API_LINK + "private/get_all_sections",
-    {
-      headers: { Authorization: "Basic " + getCookie("token") },
-    }
-  );
-
-const deleteArticle = (id: string) => {
-  return axios.delete(
-    import.meta.env.VITE_APPLICATION_API_LINK + "private/delete_article",
-    {
-      headers: { Authorization: "Basic " + getCookie("token") },
-      data: { id: parseInt(id) },
-    }
-  );
-};
-
-const updateArticle = (article: ArticleType) =>
-  axios.post(
-    import.meta.env.VITE_APPLICATION_API_LINK + "private/update_article",
-    {
-      content: article.content,
-      header: article.header,
-      parent_id: parseInt(article.parent_id?.toString() as string),
-      id: parseInt(article.id?.toString() as string),
-      type: article.type,
-    },
-    { headers: { Authorization: "Basic " + getCookie("token") } }
-  );
-
-const uploadMedia = (file: File) => {
-  const formData = new FormData();
-  formData.append("file", file);
-  return axios.post(
-    import.meta.env.VITE_APPLICATION_API_LINK + "private/upload_media",
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: "Basic " + getCookie("token"),
-      },
-    }
-  );
-};
-
-const getUsersDevices = () =>
-  axios.get(
-    import.meta.env.VITE_APPLICATION_API_LINK + "private/get_devices_fl",
-    {
-      headers: { Authorization: "Basic " + getCookie("token") },
-    }
-  );
-
-const getAllUsersData = () =>
-  axios.get(
-    import.meta.env.VITE_APPLICATION_API_LINK + "private/get_all_users_fl",
-    {
-      headers: { Authorization: "Basic " + getCookie("token") },
-    }
-  );
-
-const sendMailing = (message: string) =>
-  axios.post(
-    import.meta.env.VITE_APPLICATION_API_LINK + "private/mailing",
-    { mailingText: message },
-    {
-      headers: { Authorization: "Basic " + getCookie("token") },
-    }
-  );
-
-const createVideo = ({
-  name,
-  videoLink,
-  thumbnailLink,
-}: {
-  name: string;
-  videoLink: string;
-  thumbnailLink?: string;
-}) =>
-  axios.post(
-    import.meta.env.VITE_APPLICATION_API_LINK + "private/videos/create_video",
-    {
-      name,
-      source: videoLink,
-      thumbnail: thumbnailLink || "",
-    },
-    { headers: { Authorization: "Basic " + getCookie("token") } }
-  );
-
-const updateVideo = ({
-  id,
-  name,
-  videoLink,
-  CreatedAt,
-  thumbnail,
-  duration,
-}: {
-  id: string;
-  name: string;
-  videoLink: string;
-  CreatedAt: string;
-  thumbnail: string;
-  duration: number;
-}) =>
-  axios.post(
-    import.meta.env.VITE_APPLICATION_API_LINK + "private/videos/update_video",
-    {
-      ID: parseInt(id),
-      name,
-      source: videoLink,
-      CreatedAt,
-      thumbnail,
-      duration,
-    },
-    { headers: { Authorization: "Basic " + getCookie("token") } }
-  );
-
-const deleteVideo = (id: string) =>
-  axios.delete(
-    import.meta.env.VITE_APPLICATION_API_LINK + "private/videos/delete_video",
-    {
-      headers: { Authorization: "Basic " + getCookie("token") },
-      params: { videoID: parseInt(id) },
-    }
-  );
-
-const createNews = ({ content }: { content: string }) =>
-  axios.post(
-    import.meta.env.VITE_APPLICATION_API_LINK + "private/news/create",
-    { content },
-    {
-      headers: { Authorization: "Basic " + getCookie("token") },
-    }
-  );
-
-const getAllNews = (userId?: string) =>
-  axios.get(import.meta.env.VITE_APPLICATION_API_LINK + "public/news/get_all", {
-    headers: {
-      "User-ID": userId || "-1",
-    },
-  });
-
-const updateNews = ({
-  id,
-  createdAt,
-  content,
-}: {
-  id: string;
-  createdAt: string;
-  content: string;
-}) =>
-  axios.patch(
-    import.meta.env.VITE_APPLICATION_API_LINK + "private/news/update",
-    {
-      id: parseInt(id),
-      createdAt,
-      content,
-    },
-    { headers: { Authorization: "Basic " + getCookie("token") } }
-  );
-
-const deleteNews = (id: string) =>
-  axios.delete(
-    import.meta.env.VITE_APPLICATION_API_LINK + "private/news/delete",
-    {
-      headers: { Authorization: "Basic " + getCookie("token") },
-      params: { id: parseInt(id) },
-    }
-  );
-
-const getNewsById = (id: string) =>
-  axios.get(import.meta.env.VITE_APPLICATION_API_LINK + "public/news/get", {
-    headers: { Authorization: "Basic " + getCookie("token") },
-    params: { id: parseInt(id) },
-  });
-
-export {
-  auth,
-  getAllArticles,
-  getAllVideos,
-  getVideoData,
-  getThumbnailFromVideo,
-  createArticle,
-  getArticle,
-  getArticlesByParentId,
-  getAllSections,
-  deleteArticle,
-  updateArticle,
-  uploadMedia,
-  getUsersDevices,
-  getAllUsersData,
-  sendMailing,
-  createVideo,
-  updateVideo,
-  deleteVideo,
-  createNews,
-  getAllNews,
-  updateNews,
-  deleteNews,
-  getNewsById,
+export const uploadVideo = (
+  file: File,
+  name?: string,
+  thumbnailImageId?: number
+) => {
+  const fd = new FormData();
+  fd.append("file", file);
+  if (name) fd.append("name", name);
+  if (thumbnailImageId !== undefined)
+    fd.append("thumbnail_image_id", thumbnailImageId.toString());
+  return api.post(`${BASE}/media/videos`, fd);
 };

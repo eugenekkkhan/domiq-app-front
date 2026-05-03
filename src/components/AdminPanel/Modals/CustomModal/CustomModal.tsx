@@ -1,39 +1,39 @@
-import Box from "@mui/material/Box";
-import Modal from "@mui/material/Modal";
-import type { SxProps } from "@mui/material/styles";
-import type { Theme } from "@emotion/react";
-import React from "react";
+import { useEffect, useRef } from "react";
+import type { ReactNode } from "react";
 
 export default function CustomModal({
   open,
   onClose,
   children,
-  fullWidth,
 }: {
   open: boolean;
   onClose: () => void;
-  children: React.ReactNode;
-  fullWidth?: boolean;
+  children: ReactNode;
 }) {
+  const overlayRef = useRef<HTMLDivElement>(null);
 
-  const style: SxProps<Theme> = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: fullWidth ? "calc(100% - 32px)" : "80%",
-    bgcolor: "background.paper",
-    borderRadius: "12px",
-    boxShadow: 24,
-    p: "8px",
-    display: "flex",
-    flexDirection: "column",
-    gap: "8px",
-  };
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [open, onClose]);
+
+  if (!open) return null;
 
   return (
-    <Modal open={open} onClose={onClose}>
-      <Box sx={style}>{children}</Box>
-    </Modal>
+    <div
+      ref={overlayRef}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      onClick={(e) => {
+        if (e.target === overlayRef.current) onClose();
+      }}
+    >
+      <div className="card w-full max-w-xl max-h-[90vh] overflow-y-auto p-4 flex flex-col gap-3 shadow-xl">
+        {children}
+      </div>
+    </div>
   );
 }

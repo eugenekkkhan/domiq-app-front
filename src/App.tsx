@@ -1,39 +1,27 @@
+import { NavLink } from "react-router";
 import Banner from "./components/Banner/Banner";
 import MainMenu from "./components/MainMenu/MainMenu";
-import ButtonMain from "./components/Button/ButtonMain";
-import ChatBubbleRoundedIcon from "@mui/icons-material/ChatBubbleRounded";
 import NewsComponent from "./components/News/NewsComponent";
+import PublicLayout from "./components/PublicLayout/PublicLayout";
 
 const App = () => {
   return (
-    <div
-      style={{
-        maxWidth: "100%",
-        display: "flex",
-        flexDirection: "column",
-        gap: "16px",
-      }}
-    >
-      {import.meta.env.VITE_DEV_STATUS === "development" && "development"}
-      <NewsComponent />
+    <PublicLayout>
+      <div className="flex items-center justify-between">
+        <h2 className="font-bold text-lg">Новости</h2>
+        <NavLink to="/news" className="text-primary text-sm font-medium">
+          Все →
+        </NavLink>
+      </div>
+      <NewsComponent limit={4} scroll />
+
       <Banner />
-      <MainMenu />
-      <ButtonMain
-        Icon={ChatBubbleRoundedIcon}
-        text="Связь с оператором"
-        color="#34C759"
-        onClick={() => {
-          location.href = "https://t.me/D0M_IQ";
-        }}
-        style={{
-          flexDirection: "row",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "24px",
-          gap: "8px",
-        }}
-      />
-    </div>
+
+      <div>
+        <h2 className="font-bold text-lg mb-3">Разделы</h2>
+        <MainMenu />
+      </div>
+    </PublicLayout>
   );
 };
 

@@ -1,58 +1,44 @@
+import { useEffect, useState, useCallback } from "react";
+import { getArticles } from "../queries";
+import type { Article } from "../types/Article";
 import ArticleCard from "../components/AdminPanel/ArticleCard/ArticleCard";
 import AddArticle from "../components/AdminPanel/Modals/AddArticle/AddArticle";
-import TextField from "@mui/material/TextField";
-import Stack from "@mui/material/Stack";
-import Button from "@mui/material/Button";
-import { useEffect, useState } from "react";
-import { getAllArticles } from "../queries";
-import type { ArtHeader } from "../types/ArtHeader";
 import AdminPage from "./AdminPage";
 
 const AdminArticles = () => {
-  const [articles, setArticles] = useState<ArtHeader[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  useEffect(() => {
-    getAllArticles()
-      .then((response) => {
-        setArticles(response.data);
-      })
-      .catch(() => {
-        setArticles([{ header: "Empty", id: 0, type: "header" }]);
-      });
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [search, setSearch] = useState("");
+
+  const load = useCallback(() => {
+    getArticles().then((res) => setArticles(res.data as Article[]));
   }, []);
 
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
+  useEffect(() => { load(); }, [load]);
 
-  const filteredArticles = articles
-    .filter((article) =>
-      article.header.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+  const filtered = articles
+    .filter((a) => a.title.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => a.id - b.id);
 
   return (
     <AdminPage>
-      <Stack spacing={"12px"} direction={{ xs: "column", md: "row" }}>
-        <TextField
-          label="Поиск"
-          variant="outlined"
-          size="small"
-          onChange={handleSearch}
-          value={searchTerm}
-          sx={{ flex: 3 }}
-          fullWidth
+      <div className="flex gap-2 flex-wrap">
+        <input
+          className="input flex-1 min-w-40"
+          placeholder="Поиск по заголовку"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
         />
-        {searchTerm !== "" && (
-          <Button variant="outlined" onClick={() => setSearchTerm("")}>
-            Сброс поиска
-          </Button>
+        {search && (
+          <button className="btn btn-secondary" onClick={() => setSearch("")}>Сброс</button>
         )}
-        <AddArticle />
-      </Stack>
-      {filteredArticles.map((article, index) => (
-        <ArticleCard key={index} article={article} />
+        <AddArticle onSaved={load} />
+      </div>
+      {filtered.map((article) => (
+        <ArticleCard key={article.id} article={article} onDelete={load} />
       ))}
+      {filtered.length === 0 && (
+        <p className="text-sm text-gray-400 text-center py-8">Статьи не найдены</p>
+      )}
     </AdminPage>
   );
 };

@@ -1,241 +1,102 @@
-import { initData, themeParams, miniApp } from "@telegram-apps/sdk";
-import { useEffect, useRef, useState } from "react";
-import Slider, { type Settings } from "react-slick";
-import type { default as SlickSlider } from "react-slick";
-import "./News.css";
-import { convertTimeStampToDate } from "../../utils/convertTime";
+import { useRef, useState } from "react";
 import { NavLink } from "react-router";
-import { getAllNews } from "../../queries";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import remarkBreaks from "remark-breaks";
-import rehypeRaw from "rehype-raw";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { getNews } from "../../queries";
+import type { News } from "../../types/NewArticle";
+import { convertTimeStampToDate } from "../../utils/convertTime";
+import { imageUrl } from "../../utils/media";
 
-const Card = ({
-  text,
-  id,
-  date = "",
-}: {
-  text: string;
-  id: number;
-  date?: string;
-}) => {
+const NewsCard = ({ item, fixed }: { item: News; fixed?: boolean }) => (
+  <NavLink to={`/news/${item.id}`} className={fixed ? "h-full" : ""}>
+    <div className={`card p-4 flex flex-col gap-1.5 ${fixed ? "h-full justify-between" : "hover:shadow-md transition-shadow gap-2"}`}>
+      {item.preview_image && !fixed && (
+        <img
+          src={imageUrl(item.preview_image, "medium")}
+          alt={item.title}
+          className="w-full h-36 object-cover rounded-xl"
+        />
+      )}
+      <p className="text-xs text-gray-400 font-medium">
+        {convertTimeStampToDate(item.created_at)}
+      </p>
+      <h3 className="font-semibold text-[15px] leading-snug line-clamp-2">{item.title}</h3>
+      <p className="text-sm text-gray-500 leading-relaxed line-clamp-3">{item.short}</p>
+    </div>
+  </NavLink>
+);
+
+const NewsScroll = ({ news }: { news: News[] }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [canLeft, setCanLeft] = useState(false);
+  const [canRight, setCanRight] = useState(true);
+
+  const updateArrows = () => {
+    const el = ref.current;
+    if (!el) return;
+    setCanLeft(el.scrollLeft > 4);
+    setCanRight(el.scrollLeft + el.offsetWidth < el.scrollWidth - 4);
+  };
+
+  const scrollBy = (dir: 1 | -1) => {
+    ref.current?.scrollBy({ left: dir * (ref.current.offsetWidth / 2 + 6), behavior: "smooth" });
+  };
+
   return (
-    <NavLink to={"news/" + id}>
+    <div className="relative">
       <div
-        style={{
-          borderRadius: "26px",
-          padding: "24px",
-          height: "calc(136px - 48px)",
-          width: "calc(100% - 48px - 48px)",
-          margin: "0 24px",
-          background: themeParams.sectionBackgroundColor(),
-          display: "flex",
-          flexDirection: "column",
-        }}
+        ref={ref}
+        onScroll={updateArrows}
+        className="flex gap-3 overflow-x-auto snap-x snap-mandatory scrollbar-none"
       >
-        <p
-          style={{
-            fontWeight: "bold",
-            fontSize: "13px",
-            color: themeParams.sectionHeaderTextColor(),
-          }}
-        >
-          {date && convertTimeStampToDate(date)}
-        </p>
-        <div style={{ color: themeParams.textColor() }}>
-          <Markdown
-            children={text?.replace(/\\n/gi, "\n")}
-            rehypePlugins={[rehypeRaw]}
-            remarkPlugins={[remarkGfm, remarkBreaks]}
-            components={{
-              a: (props) => {
-                const href =
-                  typeof props.href === "string" ? props.href.trim() : "";
-                const isEmpty =
-                  !href || href === "#" || href === "javascript:void(0)";
-
-                if (isEmpty) {
-                  // Render a non-interactive element for empty links
-                  return (
-                    <span
-                      style={{
-                        color: themeParams.linkColor(),
-                        textDecoration: "underline",
-                        cursor: "default",
-                      }}
-                    >
-                      {props.children}
-                    </span>
-                  );
-                }
-
-                const onClick: React.MouseEventHandler<HTMLAnchorElement> = (
-                  e
-                ) => {
-                  e.preventDefault();
-                  try {
-                    if ((miniApp as any).openLink?.isAvailable?.()) {
-                      (miniApp as any).openLink(href);
-                    } else if ((window as any).Telegram?.WebApp?.openLink) {
-                      (window as any).Telegram.WebApp.openLink(href);
-                    } else {
-                      window.open(href, "_blank", "noopener,noreferrer");
-                    }
-                  } catch {
-                    window.open(href, "_blank", "noopener,noreferrer");
-                  }
-                };
-
-                return (
-                  <a
-                    {...props}
-                    href={href}
-                    onClick={onClick}
-                    style={{ color: themeParams.linkColor() }}
-                    target={"_blank"}
-                    rel={"noopener noreferrer"}
-                  />
-                );
-              },
-            }}
-          />
-        </div>
+        {news.map((item) => (
+          <div key={item.id} className="snap-start shrink-0 w-[calc(50%-6px)] h-[148px]">
+            <NewsCard item={item} fixed />
+          </div>
+        ))}
       </div>
-    </NavLink>
+
+      {canLeft && (
+        <button
+          onClick={() => scrollBy(-1)}
+          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 w-7 h-7 rounded-full bg-white shadow-md flex items-center justify-center z-10"
+        >
+          <ChevronLeft size={16} className="text-gray-600" />
+        </button>
+      )}
+      {canRight && (
+        <button
+          onClick={() => scrollBy(1)}
+          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 w-7 h-7 rounded-full bg-white shadow-md flex items-center justify-center z-10"
+        >
+          <ChevronRight size={16} className="text-gray-600" />
+        </button>
+      )}
+    </div>
   );
 };
 
-type NewsItem = {
-  short: string;
-  CreatedAt?: string;
-  ID: number;
-};
+const NewsComponent = ({ limit, scroll }: { limit?: number; scroll?: boolean }) => {
+  const { data } = useQuery({
+    queryKey: ["news"],
+    queryFn: () => getNews().then((r) => (r.data as News[]).sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    )),
+  });
 
-const NewsComponent = () => {
-  const [newsData, setNewsData] = useState<NewsItem[]>([]);
-  const [uniqueItems, setUniqueItems] = useState<NewsItem[]>([]);
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-  const sliderRef = useRef<SlickSlider | null>(null);
+  const news = data ? (limit ? data.slice(0, limit) : data) : [];
 
-  useEffect(() => {
-    getAllNews(initData.user()?.id.toString()).then((res) => {
-      const incoming = (res.data as NewsItem[]) || [];
-      const normalized = incoming.slice().reverse(); // avoid mutating res.data
-      setUniqueItems(normalized);
+  if (news.length === 0) return null;
 
-      let list = normalized;
-      if (normalized.length > 0 && normalized.length <= 3) {
-        const minSlidesForInfinite = 4; // must be > slidesToShow (3)
-        const repeats = Math.ceil(minSlidesForInfinite / normalized.length);
-        list = Array.from({ length: repeats }).flatMap(() => normalized);
-      }
-      setNewsData(list);
-    });
-  }, []);
-
-  const settings: Settings = {
-    dots: uniqueItems.length > 3, // use slick dots only when >3 unique items
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    arrows: false,
-    centerMode: true,
-    autoplaySpeed: 2000,
-    touchThreshold: 1000,
-    customPaging: (i: number) => {
-      return (
-        <div
-          style={{
-            marginTop: "8px",
-            width: "8px",
-            height: "8px",
-            borderRadius: "100%",
-            backgroundColor:
-              i !== currentSlideIndex
-                ? themeParams.sectionSeparatorColor()
-                : themeParams.textColor(),
-          }}
-        ></div>
-      );
-    },
-    afterChange: (newIndex) => setCurrentSlideIndex(newIndex),
-  };
-
-  // Map current slick index to logical unique item index (by ID)
-  const activeLogicalIndex = (() => {
-    const current = newsData[currentSlideIndex];
-    if (!current) return 0;
-    const idx = uniqueItems.findIndex((u) => u.ID === current.ID);
-    return idx >= 0 ? idx : 0;
-  })();
+  if (scroll) {
+    return <NewsScroll news={news} />;
+  }
 
   return (
-    <div
-      style={{
-        position: "relative",
-        height: "160px",
-        width: "100%",
-        // display: newsData.length === 0 ? "none" : "block",
-      }}
-    >
-      <div
-        style={{
-          width: "calc(300vw - 8px)",
-          left: "50%",
-          right: "0",
-          marginLeft: "calc(-150vw + 4px)",
-          position: "absolute",
-        }}
-      >
-        <Slider ref={sliderRef} {...settings}>
-          {newsData.map((item, index) => (
-            <div key={`${item.ID}-${index}`}>
-              <Card
-                date={item.CreatedAt}
-                text={
-                  item.short.length === 50 ? item.short + "..." : item.short
-                }
-                id={item.ID}
-              />
-            </div>
-          ))}
-        </Slider>
-
-        {(uniqueItems.length === 2 || uniqueItems.length === 3) && (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              gap: "8px",
-              marginTop: "8px",
-            }}
-          >
-            {uniqueItems.map((it, i) => (
-              <div
-                key={`dot-${it.ID}-${i}`}
-                onClick={() => {
-                  const targetIndex = newsData.findIndex((n) => n.ID === it.ID);
-                  if (targetIndex >= 0) {
-                    sliderRef.current?.slickGoTo(targetIndex);
-                  }
-                }}
-                style={{
-                  width: "8px",
-                  height: "8px",
-                  borderRadius: "100%",
-                  backgroundColor:
-                    i === activeLogicalIndex
-                      ? themeParams.textColor()
-                      : themeParams.sectionSeparatorColor(),
-                  cursor: "pointer",
-                }}
-              />
-            ))}
-          </div>
-        )}
-      </div>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {news.map((item) => (
+        <NewsCard key={item.id} item={item} />
+      ))}
     </div>
   );
 };
