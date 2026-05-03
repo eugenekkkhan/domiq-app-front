@@ -1,50 +1,49 @@
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router";
+import { isAuthenticated } from "./utils/auth";
 import App from "./App";
 import AdminAuth from "./AdminAuth";
-import useCustomTheme from "./customHooks/useCustomTheme";
-import Videos from "./pages/VideosPage";
-import PlayerComponent from "./components/Player/Player";
-import NewArticlePage from "./pages/NewArticlePage";
-import Content from "./pages/Content/Content";
 import AdminArticles from "./pages/AdminArticles";
 import AdminNews from "./pages/AdminNews";
 import AdminVideos from "./pages/AdminVideos";
-import { getCookie } from "./utils/utils";
-import { useBackButton } from "./customHooks/useBackButton";
+import AdminSections from "./pages/AdminSections";
+import AdminMedia from "./pages/AdminMedia";
+import VideosPage from "./pages/VideosPage";
+import PlayerComponent from "./components/Player/Player";
+import NewArticlePage from "./pages/NewArticlePage";
+import NewsPage from "./pages/NewsPage";
+import SectionPage from "./pages/SectionPage";
+import ArticlePage from "./pages/ArticlePage";
 
-const RouterComponent = () => {
-  return (
-    <BrowserRouter>
-      <MainRoutes />
-    </BrowserRouter>
-  );
-};
+const RequireAuth = ({ children }: { children: React.ReactNode }) =>
+  isAuthenticated() ? <>{children}</> : <Navigate to="/admin" replace />;
 
-const MainRoutes = () => {
-  useCustomTheme();
-  useBackButton();
-  const isAuthenticated = getCookie("token");
-  return (
+const RouterComponent = () => (
+  <BrowserRouter>
     <Routes>
+      {/* Public */}
+      <Route path="/" element={<App />} />
+      <Route path="/news" element={<NewsPage />} />
+      <Route path="/news/:articleId" element={<NewArticlePage />} />
+      <Route path="/sections/:sectionId" element={<SectionPage />} />
+      <Route path="/articles/:articleId" element={<ArticlePage />} />
+      <Route path="/videos" element={<VideosPage />} />
+      <Route path="/video/:videoId" element={<PlayerComponent />} />
+
+      {/* Admin */}
       <Route
         path="/admin"
-        element={isAuthenticated ? <AdminArticles /> : <AdminAuth />}
+        element={isAuthenticated() ? <Navigate to="/admin/articles" replace /> : <AdminAuth />}
       />
-      <Route
-        path="/admin/news"
-        element={isAuthenticated ? <AdminNews /> : <AdminAuth />}
-      />
-      <Route
-        path="/admin/videos"
-        element={isAuthenticated ? <AdminVideos /> : <AdminAuth />}
-      />
-      <Route path="/" element={<App />} />
-      <Route path="/videos" element={<Videos />} />
-      <Route path="/video/:videoLink" element={<PlayerComponent />} />
-      <Route path="/news/:articleId" element={<NewArticlePage />} />
-      <Route path="/content/:contentId" element={<Content />} />
+      <Route path="/admin/articles" element={<RequireAuth><AdminArticles /></RequireAuth>} />
+      <Route path="/admin/news" element={<RequireAuth><AdminNews /></RequireAuth>} />
+      <Route path="/admin/videos" element={<RequireAuth><AdminVideos /></RequireAuth>} />
+      <Route path="/admin/sections" element={<RequireAuth><AdminSections /></RequireAuth>} />
+      <Route path="/admin/media" element={<RequireAuth><AdminMedia /></RequireAuth>} />
+
+      {/* Fallback */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
-  );
-};
+  </BrowserRouter>
+);
 
 export default RouterComponent;

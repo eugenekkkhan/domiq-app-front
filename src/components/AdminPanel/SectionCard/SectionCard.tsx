@@ -1,23 +1,23 @@
 import { useState } from "react";
-import { deleteArticle } from "../../../queries";
-import type { Article } from "../../../types/Article";
-import EditArticle from "../Modals/EditArticle/EditArticle";
+import { deleteSection } from "../../../queries";
+import type { Section } from "../../../types/Section";
+import EditSection from "../Modals/EditSection/EditSection";
 
-const ArticleCard = ({
-  article,
+const SectionCard = ({
+  section,
   onDelete,
   isLast,
 }: {
-  article: Article;
+  section: Section;
   onDelete: () => void;
   isLast: boolean;
 }) => {
   const [removing, setRemoving] = useState(false);
 
   const handleDelete = () => {
-    if (!confirm(`Удалить статью «${article.title}»?`)) return;
+    if (!confirm(`Удалить раздел «${section.name}»? Статьи внутри останутся.`)) return;
     setRemoving(true);
-    deleteArticle(article.id).then(onDelete).catch(() => setRemoving(false));
+    deleteSection(section.id).then(onDelete).catch(() => setRemoving(false));
   };
 
   if (removing) return null;
@@ -25,13 +25,14 @@ const ArticleCard = ({
   return (
     <div className={`flex items-center justify-between p-[var(--spacing-card)] gap-3 ${!isLast ? "border-b border-gray-100" : ""}`}>
       <div className="flex flex-col gap-0.5 min-w-0 flex-1">
-        <span className="font-medium text-sm truncate">{article.title}</span>
+        <span className="font-medium text-sm truncate">{section.name}</span>
         <span className="text-xs text-gray-400">
-          ID: {article.id} · Раздел: {article.section_id}
+          ID: {section.id}
+          {section.parent_id ? ` · Родитель: ${section.parent_id}` : " · Корневой"}
         </span>
       </div>
       <div className="flex gap-2 shrink-0">
-        <EditArticle article={article} onSaved={onDelete} />
+        <EditSection section={section} onSaved={onDelete} />
         <button className="btn btn-danger text-xs px-3 py-1.5" onClick={handleDelete}>
           Удалить
         </button>
@@ -40,4 +41,4 @@ const ArticleCard = ({
   );
 };
 
-export default ArticleCard;
+export default SectionCard;

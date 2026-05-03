@@ -1,67 +1,59 @@
-import React from "react";
-import { auth } from "./queries";
-import { setCookie } from "./utils/utils";
-import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
+import { useState } from "react";
+import { login } from "./queries";
+import { setToken } from "./utils/auth";
 
 const AdminAuth = () => {
-  const [form, setForm] = React.useState({
-    username: "",
-    password: "",
-    isError: false,
-  });
+  const [form, setForm] = useState({ nickname: "", password: "", error: "" });
+  const [loading, setLoading] = useState(false);
 
-  const handleForm = () => {
-    auth(form.username, form.password)
-      .then(() => {
-        setForm({ ...form, isError: false });
-        setCookie("token", btoa(`${form.username}:${form.password}`), 30);
-        window.location.href = "/admin";
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    login(form.nickname, form.password)
+      .then((res) => {
+        setToken(res.data.token);
+        window.location.href = "/admin/articles";
       })
       .catch(() => {
-        setForm({ ...form, isError: true });
+        setForm((f) => ({ ...f, error: "Неверный логин или пароль" }));
+        setLoading(false);
       });
   };
+
   return (
-    <div
-      style={{
-        maxWidth: "100vw",
-        height: "100vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center"
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "8px",
-          maxWidth: "480px",
-          minWidth: "auto"
-        }}
-      >
-        <h1>Вход в админ-панель</h1>
-        <TextField
-          label="Имя учетной записи"
-          type="text"
-          value={form.username}
-          onChange={(event) => {
-            setForm({ ...form, username: event.target.value });
-          }}
-        />
-        <TextField
-          type="password"
-          label="Пароль"
-          value={form.password}
-          onChange={(event) => {
-            setForm({ ...form, password: event.target.value });
-          }}
-        />
-        <Button onClick={() => handleForm()}>Submit</Button>
-        {form.isError && (
-          <div style={{ color: "red" }}>Authentication failed</div>
-        )}
+    <div className="min-h-screen bg-[#efeff4] flex items-center justify-center p-4">
+      <div className="card p-[var(--spacing-card)] w-full max-w-sm flex flex-col gap-3 shadow-sm">
+        <h1 className="text-2xl font-bold text-center">Вход</h1>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+          <input
+            className="input"
+            placeholder="Имя пользователя"
+            type="text"
+            autoComplete="username"
+            value={form.nickname}
+            onChange={(e) => setForm({ ...form, nickname: e.target.value, error: "" })}
+            required
+          />
+          <input
+            className="input"
+            placeholder="Пароль"
+            type="password"
+            autoComplete="current-password"
+            value={form.password}
+            onChange={(e) => setForm({ ...form, password: e.target.value, error: "" })}
+            required
+          />
+          {form.error && (
+            <p className="text-sm text-danger text-center">{form.error}</p>
+          )}
+          <button
+            className="btn btn-primary w-full mt-1"
+            type="submit"
+            disabled={loading || !form.nickname || !form.password}
+          >
+            {loading ? "Входим…" : "Войти"}
+          </button>
+        </form>
       </div>
     </div>
   );

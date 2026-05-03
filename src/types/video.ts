@@ -1,10 +1,14 @@
+import type { Image } from "./Image";
+
 export type Video = {
-  ID: number;
-  CreatedAt: string | null;
-  UpdatedAt: string | null;
-  DeletedAt: string | null;
+  id: number;
   name: string;
-  source: string;
-  thumbnail: string;
-  duration: number;
+  mime: string;
+  bucket: string;
+  object_key: string;
+  duration_sec: number;
+  thumbnail_image_id?: number;
+  thumbnail_image?: Image;
+  created_at: string;
+  updated_at: string;
 };

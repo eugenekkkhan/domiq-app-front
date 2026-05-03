@@ -1,88 +1,44 @@
-import { useEffect, useState } from "react";
-import type { Video } from "../../../types/video";
-import { themeParams } from "@telegram-apps/sdk";
-import KeyboardArrowRightRoundedIcon from "@mui/icons-material/KeyboardArrowRightRounded";
 import { NavLink } from "react-router";
-import { getThumbnailFromVideo } from "../../../queries";
+import type { Video } from "../../../types/video";
+import { imageUrl } from "../../../utils/media";
 import { secsToMins } from "../../../utils/convertTime";
+import { ChevronRight } from "lucide-react";
+import SkeletonImg from "../../SkeletonImg/SkeletonImg";
 
-const VideoSectionElement = ({ video }: { video: Video }) => {
-  // const [fetchedVideo, setFetchedVideo] = useState<string | null>(null);
-  const [thumbnail, setThumbnail] = useState<string | null>(null);
-
-  useEffect(() => {
-    getThumbnailFromVideo(video.thumbnail).then((response) => {
-      const blob = new Blob([response.data], {
-        type: response.headers["content-type"],
-      });
-      const imageUrl = URL.createObjectURL(blob);
-      setThumbnail(imageUrl);
-    });
-  }, []);
-
-  return (
-    <NavLink to={`${video.source.replace("media", "video")}`}>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          gap: "12px",
-          alignItems: "center",
-          position: "relative",
-          paddingBottom: "12px",
-        }}
-      >
-        {thumbnail && (
-          <img
-            style={{
-              width: "35%",
-              height: "100%",
-              borderRadius: "12px",
-              aspectRatio: "16 / 9",
-              objectFit: "cover",
-              backgroundColor: themeParams.sectionBackgroundColor(),
-            }}
-            src={thumbnail}
-            alt=""
-          />
-        )}
-
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "center",
-            width: "100%",
-          }}
-        >
-          <div style={{ position: "relative" }}>
-            <div>
-              {video.name
-                ? video.name.slice(0, 1).toUpperCase() + video.name.slice(1)
-                : "Без названия"}
-            </div>
-            <div style={{ color: themeParams.subtitleTextColor() }}>
-              {secsToMins(video.duration)}
-            </div>
-          </div>
-          <KeyboardArrowRightRoundedIcon
-            style={{ color: themeParams.sectionSeparatorColor() }}
-          />
+const VideoSectionElement = ({
+  video,
+  isLast,
+}: {
+  video: Video;
+  isLast: boolean;
+}) => (
+  <NavLink to={`/video/${video.id}`}>
+    <div className="flex items-center gap-3 relative py-2">
+      <SkeletonImg
+        src={video.thumbnail_image ? imageUrl(video.thumbnail_image, "thumbnail") : undefined}
+        alt={video.name}
+        className="w-[35%] shrink-0 rounded-inner bg-gray-200"
+        style={{ aspectRatio: "16/9" }}
+      />
+      <div className="flex items-center justify-between flex-1 min-w-0">
+        <div className="min-w-0">
+          <p className="text-[15px] font-medium leading-snug truncate">
+            {video.name
+              ? video.name.charAt(0).toUpperCase() + video.name.slice(1)
+              : "Без названия"}
+          </p>
+          <p className="text-sm text-gray-400 mt-0.5">{secsToMins(video.duration_sec)}</p>
         </div>
-        <span
-          style={{
-            width: "calc(65% - 12px)",
-            height: "0.33px",
-            position: "absolute",
-            bottom: "0",
-            right: "0",
-            backgroundColor: themeParams.sectionSeparatorColor(),
-          }}
-        ></span>
+        <ChevronRight size={18} className="text-gray-300 shrink-0 ml-2" />
       </div>
-    </NavLink>
-  );
-};
+      {!isLast && (
+        <span
+          className="absolute bottom-0 right-0 h-px bg-gray-100"
+          style={{ width: "65%" }}
+        />
+      )}
+    </div>
+  </NavLink>
+);
 
 export default VideoSectionElement;

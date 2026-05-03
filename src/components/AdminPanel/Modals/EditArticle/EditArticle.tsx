@@ -1,146 +1,95 @@
-import Button from "@mui/material/Button";
 import { useEffect, useState } from "react";
-import { getAllArticles, getArticle, updateArticle } from "../../../../queries";
-import type { ArticleType } from "../../../../types/Article";
-import TextField from "@mui/material/TextField";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import Select from "@mui/material/Select";
-import MenuItem from "@mui/material/MenuItem";
+import { getArticle, getSections, updateArticle } from "../../../../queries";
+import type { Article } from "../../../../types/Article";
+import type { Section } from "../../../../types/Section";
 import CustomMDEditor from "../../../CustomMDEditor/CustomMDEditor";
 import CustomModal from "../CustomModal/CustomModal";
 
-export default function EditArticle({ id }: { id: number }) {
+export default function EditArticle({
+  article,
+  onSaved,
+}: {
+  article: Article;
+  onSaved: () => void;
+}) {
   const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-  const [initialForm, setInitialForm] = useState({
-    header: "",
-    content: "",
-    parentId: null as number | null,
-    type: "article" as "article" | "section",
+  const [sections, setSections] = useState<Section[]>([]);
+  const [form, setForm] = useState({
+    title: article.title,
+    content: article.content_markdown,
+    sectionId: String(article.section_id),
   });
-
-  const [data, setData] = useState<ArticleType[]>([]);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-    formElement: string
-  ) => {
-    setForm({ ...form, [formElement]: e.target.value });
-  };
-
-  const [form, setForm] = useState(initialForm);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    getArticle(id.toString()).then((res) => {
-      getAllArticles().then((response) => {
-        const articles = response.data as ArticleType[];
-        setData(articles.filter((article) => article.type === "section"));
-      });
-      const fetchedData = res.data as ArticleType;
-      setInitialForm({
-        header: fetchedData.header,
-        content: fetchedData.content,
-        parentId: fetchedData.parent_id,
-        type: fetchedData.type,
-      });
-      setForm({
-        header: fetchedData.header,
-        content: fetchedData.content,
-        parentId: fetchedData.parent_id,
-        type: fetchedData.type,
-      });
+    if (!open) return;
+    Promise.all([
+      getArticle(article.id),
+      getSections(),
+    ]).then(([artRes, secRes]) => {
+      const a = artRes.data as Article;
+      setForm({ title: a.title, content: a.content_markdown, sectionId: String(a.section_id) });
+      setSections(secRes.data as Section[]);
     });
-  }, [open]);
+  }, [open, article.id]);
 
-  const resetData = () => {
-    setForm(initialForm);
+  const handleSave = () => {
+    setSaving(true);
+    updateArticle(article.id, form.title, form.content, Number(form.sectionId))
+      .then(() => { setOpen(false); onSaved(); })
+      .finally(() => setSaving(false));
   };
+
+  const dirty =
+    form.title !== article.title ||
+    form.content !== article.content_markdown ||
+    form.sectionId !== String(article.section_id);
 
   return (
     <>
-      <Button
-        onClick={handleOpen}
-        variant="contained"
-        disableElevation
-        fullWidth
-      >
-        Редактировать
-      </Button>
-      <CustomModal open={open} onClose={handleClose} fullWidth>
-        <h3>Редактирование</h3>
-        <TextField
-          label="Заголовок"
-          variant="outlined"
-          fullWidth
-          value={form.header}
-          onChange={(e) => setForm({ ...form, header: e.target.value })}
+      <button className="btn btn-primary text-xs px-3 py-1.5" onClick={() => setOpen(true)}>
+        Изменить
+      </button>
+      <CustomModal open={open} onClose={() => setOpen(false)}>
+        <h3 className="font-semibold text-base">Редактировать статью</h3>
+        <input
+          className="input"
+          placeholder="Заголовок"
+          value={form.title}
+          onChange={(e) => setForm({ ...form, title: e.target.value })}
         />
-        <FormControl fullWidth required>
-          <InputLabel>Раздел</InputLabel>
-          <Select
-            label="Раздел"
-            onChange={(e) =>
-              handleChange(
-                e as React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-                "parentId"
-              )
-            }
-            value={form.parentId}
-          >
-            {data.map((item) => (
-              <MenuItem key={item.id} value={item.id as number}>
-                {item.header}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        {form.type === "article" && (
-          <CustomMDEditor
-            value={form.content}
-            onChange={(value) => setForm({ ...form, content: value as string })}
-          />
-        )}
-        <div style={{ display: "flex", justifyContent: "end", gap: "8px" }}>
-          {(form.header !== initialForm.header ||
-            form.content !== initialForm.content ||
-            form.parentId !== initialForm.parentId) && (
-            <Button
-              variant="outlined"
-              onClick={() => {
-                resetData();
-              }}
+        <select
+          className="input"
+          value={form.sectionId}
+          onChange={(e) => setForm({ ...form, sectionId: e.target.value })}
+        >
+          <option value="">— Раздел —</option>
+          {sections.map((s) => (
+            <option key={s.id} value={s.id}>{s.name}</option>
+          ))}
+        </select>
+        <CustomMDEditor
+          value={form.content}
+          onChange={(v) => setForm({ ...form, content: v })}
+          heightVh={50}
+          minHeight={250}
+        />
+        <div className="flex justify-end gap-2">
+          {dirty && (
+            <button
+              className="btn btn-secondary"
+              onClick={() => setForm({ title: article.title, content: article.content_markdown, sectionId: String(article.section_id) })}
             >
-              Сброс изменений
-            </Button>
+              Сбросить
+            </button>
           )}
-          <Button
-            variant="contained"
-            disabled={
-              form.type === "article"
-                ? form.header === initialForm.header &&
-                  form.content === initialForm.content &&
-                  form.parentId === initialForm.parentId
-                : form.header === initialForm.header &&
-                  form.parentId === initialForm.parentId
-            }
-            onClick={() => {
-              handleClose();
-              updateArticle({
-                content: form.content,
-                header: form.header,
-                parent_id: form.parentId,
-                type: form.type,
-                id: id,
-              }).then(() => {
-                window.location.reload();
-              });
-            }}
+          <button
+            className="btn btn-primary"
+            disabled={saving || !dirty || !form.title}
+            onClick={handleSave}
           >
-            Сохранить
-          </Button>
+            {saving ? "Сохраняем…" : "Сохранить"}
+          </button>
         </div>
       </CustomModal>
     </>

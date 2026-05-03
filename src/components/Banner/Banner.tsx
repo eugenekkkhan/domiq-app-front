@@ -1,68 +1,24 @@
-import { useEffect, useState } from "react";
-import Image from "../../assets/image 8.png";
-import { themeParams } from "@telegram-apps/sdk";
 import { NavLink } from "react-router";
-
-const makeDarker = (color: string, darkOffset: number) => {
-  let newColor: string = "#";
-  for (let i = 1; i <= 5; i = i + 2) {
-    const additionalPart = (
-      parseInt(color.slice(i, i + 2), 16) - darkOffset > 0
-        ? parseInt(color.slice(i, i + 2), 16) - darkOffset
-        : 0
-    ).toString(16);
-
-    newColor += (additionalPart.length === 1 ? "0" : "") + additionalPart;
-  }
-  return newColor;
-};
+import Image from "../../assets/image 8.png";
 
 const Banner = () => {
-  const [coefficient, setCoefficient] = useState(1);
-  useEffect(() => {
-    const eventHandler = () => {
-      if (window.innerWidth <= 400) {
-        setCoefficient(window.innerWidth / 400);
-      }
-    };
-    eventHandler();
-    window.addEventListener("resize", eventHandler);
-    return () => window.removeEventListener("resize", eventHandler);
-  }, []);
   return (
     <NavLink to="/videos">
       <div
+        className="relative rounded-outer overflow-hidden flex items-center"
         style={{
-          height: `${164 - 32}px`,
-          background: `radial-gradient(circle at 90% 135%, ${themeParams.buttonColor()}, ${makeDarker(
-            themeParams.buttonColor() as string,
-            100
-          )} 55%)`,
-          borderRadius: "26px",
+          height: "132px",
+          background: "radial-gradient(circle at 90% 135%, #007aff, #003f99 55%)",
           padding: "16px 20px",
-          color: themeParams.buttonTextColor(),
-          display: "flex",
-          position: "relative",
         }}
       >
-        <p
-          style={{
-            width: "160px",
-            fontSize: `${coefficient}em`,
-          }}
-        >
-          Видеоинструкция по подключению и работе с камерой
+        <p className="text-white font-medium leading-snug w-40 text-[15px] z-10">
+          Видеоинструкция по подключению и работе с камерой
         </p>
         <img
           src={Image}
-          alt="image"
-          style={{
-            right: "0px",
-            bottom: "0",
-            position: "absolute",
-            scale: coefficient,
-            transformOrigin: "bottom right",
-          }}
+          alt=""
+          className="absolute right-0 bottom-0 h-full object-contain object-bottom pointer-events-none select-none"
         />
       </div>
     </NavLink>

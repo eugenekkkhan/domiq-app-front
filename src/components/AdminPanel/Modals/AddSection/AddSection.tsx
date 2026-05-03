@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
-import { createArticle, getSections } from "../../../../queries";
+import { createSection, getSections } from "../../../../queries";
 import type { Section } from "../../../../types/Section";
-import CustomMDEditor from "../../../CustomMDEditor/CustomMDEditor";
 import CustomModal from "../CustomModal/CustomModal";
 
-export default function AddArticle({ onSaved }: { onSaved: () => void }) {
+export default function AddSection({ onSaved }: { onSaved: () => void }) {
   const [open, setOpen] = useState(false);
   const [sections, setSections] = useState<Section[]>([]);
-  const [form, setForm] = useState({ title: "", content: "", sectionId: "" });
+  const [form, setForm] = useState({ name: "", parentId: "" });
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -15,12 +14,12 @@ export default function AddArticle({ onSaved }: { onSaved: () => void }) {
     getSections().then((res) => setSections(res.data as Section[]));
   }, [open]);
 
-  const reset = () => setForm({ title: "", content: "", sectionId: "" });
+  const reset = () => setForm({ name: "", parentId: "" });
 
   const handleSave = () => {
-    if (!form.title || !form.sectionId) return;
+    if (!form.name) return;
     setSaving(true);
-    createArticle(form.title, form.content, Number(form.sectionId))
+    createSection(form.name, form.parentId ? Number(form.parentId) : undefined)
       .then(() => { reset(); setOpen(false); onSaved(); })
       .finally(() => setSaving(false));
   };
@@ -28,39 +27,33 @@ export default function AddArticle({ onSaved }: { onSaved: () => void }) {
   return (
     <>
       <button className="btn btn-primary shrink-0" onClick={() => setOpen(true)}>
-        + Статья
+        + Раздел
       </button>
       <CustomModal open={open} onClose={() => setOpen(false)}>
-        <h3 className="font-semibold text-base">Добавить статью</h3>
+        <h3 className="font-semibold text-base">Добавить раздел</h3>
         <input
           className="input"
-          placeholder="Заголовок"
-          value={form.title}
-          onChange={(e) => setForm({ ...form, title: e.target.value })}
+          placeholder="Название раздела"
+          value={form.name}
+          onChange={(e) => setForm({ ...form, name: e.target.value })}
         />
         <select
           className="input"
-          value={form.sectionId}
-          onChange={(e) => setForm({ ...form, sectionId: e.target.value })}
+          value={form.parentId}
+          onChange={(e) => setForm({ ...form, parentId: e.target.value })}
         >
-          <option value="">— Раздел —</option>
+          <option value="">— Корневой раздел —</option>
           {sections.map((s) => (
             <option key={s.id} value={s.id}>{s.name}</option>
           ))}
         </select>
-        <CustomMDEditor
-          value={form.content}
-          onChange={(v) => setForm({ ...form, content: v })}
-          heightVh={50}
-          minHeight={250}
-        />
         <div className="flex justify-end gap-2">
-          {(form.title || form.content) && (
+          {form.name && (
             <button className="btn btn-secondary" onClick={reset}>Очистить</button>
           )}
           <button
             className="btn btn-primary"
-            disabled={saving || !form.title || !form.sectionId}
+            disabled={saving || !form.name}
             onClick={handleSave}
           >
             {saving ? "Сохраняем…" : "Сохранить"}
