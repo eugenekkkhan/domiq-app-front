@@ -12,6 +12,12 @@
   src: url("./assets/fonts/SF-Pro-Display-Bold.woff");
 }
 
+@font-face {
+  font-family: "SF Pro";
+  font-style: italic;
+  src: url("./assets/fonts/SF-Pro-Text-Regular-Italic.woff");
+}
+
 @theme {
   --font-sans: "SF Pro", ui-sans-serif, system-ui, sans-serif;
   --color-primary: #007aff;
