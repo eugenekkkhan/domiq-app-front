@@ -21,15 +21,19 @@ export default function EditNews({
   const [previewImage, setPreviewImage] = useState<Image | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!open) return;
+    setError("");
     getNewsItem(id).then((res) => {
       const n = res.data as News;
       const f = { title: n.title, content: n.content };
       setForm(f);
       setInitial(f);
       setPreviewImage(n.preview_image ?? null);
+    }).catch(() => {
+      setError("Не удалось загрузить новость");
     });
   }, [open, id]);
 
@@ -38,11 +42,13 @@ export default function EditNews({
 
   const handleSave = () => {
     setSaving(true);
+    setError("");
     updateNews(id, form.title, form.content, previewImage?.id)
       .then(() => {
         setOpen(false);
         onSaved();
       })
+      .catch(() => setError("Не удалось сохранить новость"))
       .finally(() => setSaving(false));
   };
 
@@ -56,6 +62,7 @@ export default function EditNews({
       </button>
       <CustomModal open={open} onClose={() => setOpen(false)}>
         <h3 className="font-semibold text-base">Редактировать новость</h3>
+        {error && <p className="text-sm text-danger">{error}</p>}
         <input
           className="input"
           placeholder="Заголовок"

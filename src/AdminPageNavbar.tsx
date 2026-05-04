@@ -13,9 +13,12 @@ import {
   Sun,
   Moon,
   LogOut,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { removeToken } from "./utils/auth";
 import { useThemeMode } from "./utils/theme";
+import { useSidebar } from "./contexts/SidebarContext";
 
 const navItems = [
   { to: "/admin/articles", label: "Статьи", Icon: FileText },
@@ -44,9 +47,7 @@ const SidebarContent = ({ onNav }: { onNav?: () => void }) => {
             onClick={onNav}
             className={({ isActive }) =>
               `flex items-center gap-3 px-3 py-2.5 rounded-inner text-sm font-medium transition-colors ${
-                isActive
-                  ? "bg-bg text-primary"
-                  : "text-text/70 hover:bg-bg"
+                isActive ? "bg-bg text-primary" : "text-text/70 hover:bg-bg"
               }`
             }
           >
@@ -77,13 +78,17 @@ const SidebarContent = ({ onNav }: { onNav?: () => void }) => {
 
 const AdminPageNavbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { isOpen: isSidebarOpen, toggleSidebar } = useSidebar();
 
   return (
     <>
       {/* Mobile top bar */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-14 bg-card border-b border-border flex items-center justify-between px-4 z-40">
         <span className="font-semibold text-base">Админ-панель</span>
-        <button onClick={() => setIsOpen(!isOpen)} className="p-1 cursor-pointer">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="p-1 cursor-pointer"
+        >
           {isOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
@@ -106,12 +111,29 @@ const AdminPageNavbar = () => {
       </div>
 
       {/* Desktop sidebar */}
-      <div className="hidden md:flex fixed top-0 left-0 bottom-0 w-52 bg-card border-r border-border z-40 flex-col">
+      <div
+        className={`hidden md:flex fixed top-0 left-0 bottom-0 bg-card border-r border-border z-40 flex-col transition-all duration-300 ${
+          isSidebarOpen ? "w-52" : "w-0"
+        }`}
+      >
         <div className="p-4 border-b border-border">
           <p className="font-bold text-base">Админ-панель</p>
         </div>
-        <SidebarContent />
+        {isSidebarOpen && <SidebarContent />}
       </div>
+
+      {/* Toggle sidebar button */}
+      <button
+        onClick={toggleSidebar}
+        className="hidden md:flex fixed left-0 top-1/2 -translate-y-1/2 z-50 p-2 bg-card border border-border rounded-r-inner text-text/60 hover:text-text hover:bg-bg transition-colors cursor-pointer"
+        style={{
+          left: isSidebarOpen ? "208px" : "0",
+          transition: "left 300ms",
+        }}
+        title={isSidebarOpen ? "Hide sidebar" : "Show sidebar"}
+      >
+        {isSidebarOpen ? <ChevronLeft size={18} /> : <ChevronRight size={18} />}
+      </button>
     </>
   );
 };

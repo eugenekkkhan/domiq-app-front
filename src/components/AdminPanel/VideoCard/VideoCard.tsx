@@ -47,6 +47,9 @@ const VideoCard = ({
         onRenamed?.(video.id, trimmed);
         setEditing(false);
       })
+      .catch(() => {
+        window.alert("Не удалось переименовать видео");
+      })
       .finally(() => setSaving(false));
   };
 
@@ -57,7 +60,11 @@ const VideoCard = ({
       )
     )
       return;
-    deleteVideo(video.id).then(() => onDeleted?.(video.id));
+    deleteVideo(video.id)
+      .then(() => onDeleted?.(video.id))
+      .catch(() => {
+        window.alert("Не удалось удалить видео");
+      });
   };
 
   return (

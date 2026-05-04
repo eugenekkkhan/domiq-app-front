@@ -7,14 +7,17 @@ export default function AddVideo({ onSaved }: { onSaved: () => void }) {
   const [name, setName] = useState("");
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
 
   const reset = () => { setName(""); setVideoFile(null); };
 
   const handleSave = () => {
     if (!videoFile) return;
     setUploading(true);
+    setError("");
     uploadVideo(videoFile, name || undefined)
       .then(() => { reset(); setOpen(false); onSaved(); })
+      .catch(() => setError("Не удалось загрузить видео"))
       .finally(() => setUploading(false));
   };
 
@@ -25,6 +28,7 @@ export default function AddVideo({ onSaved }: { onSaved: () => void }) {
       </button>
       <CustomModal open={open} onClose={() => setOpen(false)}>
         <h3 className="font-semibold text-base">Загрузить видео</h3>
+        {error && <p className="text-sm text-danger">{error}</p>}
         <input
           className="input"
           placeholder="Название (необязательно)"

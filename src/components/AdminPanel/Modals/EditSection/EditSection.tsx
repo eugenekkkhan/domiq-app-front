@@ -18,16 +18,20 @@ export default function EditSection({
     parentId: section.parent_id ? String(section.parent_id) : "",
   });
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!open) return;
+    setError("");
     setForm({
       name: section.name,
       parentId: section.parent_id ? String(section.parent_id) : "",
     });
     getSections().then((res) =>
       setSections((res.data as Section[]).filter((s) => s.id !== section.id)),
-    );
+    ).catch(() => {
+      setError("Не удалось загрузить разделы");
+    });
   }, [open, section]);
 
   const dirty =
@@ -36,6 +40,7 @@ export default function EditSection({
 
   const handleSave = () => {
     setSaving(true);
+    setError("");
     updateSection(
       section.id,
       form.name,
@@ -45,6 +50,7 @@ export default function EditSection({
         setOpen(false);
         onSaved();
       })
+      .catch(() => setError("Не удалось сохранить раздел"))
       .finally(() => setSaving(false));
   };
 
@@ -58,6 +64,7 @@ export default function EditSection({
       </button>
       <CustomModal open={open} onClose={() => setOpen(false)}>
         <h3 className="font-semibold text-base">Редактировать раздел</h3>
+        {error && <p className="text-sm text-danger">{error}</p>}
         <input
           className="input"
           placeholder="Название раздела"

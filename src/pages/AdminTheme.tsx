@@ -64,12 +64,16 @@ const AdminTheme = () => {
   const [saved_theme, setSavedTheme] = useState<Theme | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
+    setError("");
     getTheme().then((res) => {
       const t = res.data as Theme;
       setTheme(t);
       setSavedTheme(t);
+    }).catch(() => {
+      setError("Не удалось загрузить тему");
     });
   }, []);
 
@@ -85,11 +89,15 @@ const AdminTheme = () => {
   const handleSave = () => {
     if (!theme) return;
     setSaving(true);
+    setError("");
     updateTheme(theme)
       .then(() => {
         setSavedTheme(theme);
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
+      })
+      .catch(() => {
+        setError("Не удалось сохранить тему");
       })
       .finally(() => setSaving(false));
   };
@@ -131,6 +139,7 @@ const AdminTheme = () => {
           </button>
         </div>
       </div>
+      {error && <p className="text-sm text-danger">{error}</p>}
 
       <div className="flex flex-col gap-4">
         <div>

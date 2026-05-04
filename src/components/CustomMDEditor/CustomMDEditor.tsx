@@ -76,6 +76,7 @@ const insertImageUploadCommand: ICommand = {
       } catch {
         api.setSelectionRange({ start, end: start + placeholder.length });
         api.replaceSelection("");
+        window.alert("Не удалось загрузить изображение. Попробуйте еще раз.");
       }
     };
     input.click();
@@ -132,7 +133,6 @@ const CustomMDEditor = ({
         pendingApiRef.current = { state, api };
         setPickerOpen(true);
       },
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }),
     [],
   );

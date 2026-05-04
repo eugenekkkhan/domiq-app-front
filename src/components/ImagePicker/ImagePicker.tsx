@@ -16,15 +16,21 @@ export const ImagePicker = ({
 }) => {
   const [images, setImages] = useState<Image[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
   const searchRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (!open) return;
     setSearch("");
+    setError("");
     setLoading(true);
     getMedia("images")
       .then((res) => setImages(res.data as Image[]))
+      .catch(() => {
+        setImages([]);
+        setError("Не удалось загрузить изображения");
+      })
       .finally(() => setLoading(false));
     setTimeout(() => searchRef.current?.focus(), 50);
   }, [open]);
@@ -67,6 +73,8 @@ export const ImagePicker = ({
         <div className="flex-1 overflow-y-auto p-3">
           {loading ? (
             <p className="text-sm text-gray-400 text-center py-8">Загрузка…</p>
+          ) : error ? (
+            <p className="text-sm text-danger text-center py-8">{error}</p>
           ) : filtered.length === 0 ? (
             <p className="text-sm text-gray-400 text-center py-8">
               {images.length === 0 ? "Нет изображений" : "Ничего не найдено"}

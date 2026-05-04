@@ -9,10 +9,14 @@ export default function AddArticle({ onSaved }: { onSaved: () => void }) {
   const [sections, setSections] = useState<Section[]>([]);
   const [form, setForm] = useState({ title: "", content: "", sectionId: "" });
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!open) return;
-    getSections().then((res) => setSections(res.data as Section[]));
+    setError("");
+    getSections()
+      .then((res) => setSections(res.data as Section[]))
+      .catch(() => setError("Не удалось загрузить разделы"));
   }, [open]);
 
   const reset = () => setForm({ title: "", content: "", sectionId: "" });
@@ -20,8 +24,10 @@ export default function AddArticle({ onSaved }: { onSaved: () => void }) {
   const handleSave = () => {
     if (!form.title || !form.sectionId) return;
     setSaving(true);
+    setError("");
     createArticle(form.title, form.content, Number(form.sectionId))
       .then(() => { reset(); setOpen(false); onSaved(); })
+      .catch(() => setError("Не удалось сохранить статью"))
       .finally(() => setSaving(false));
   };
 
@@ -32,6 +38,7 @@ export default function AddArticle({ onSaved }: { onSaved: () => void }) {
       </button>
       <CustomModal open={open} onClose={() => setOpen(false)}>
         <h3 className="font-semibold text-base">Добавить статью</h3>
+        {error && <p className="text-sm text-danger">{error}</p>}
         <input
           className="input"
           placeholder="Заголовок"

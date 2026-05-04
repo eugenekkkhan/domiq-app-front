@@ -6,6 +6,7 @@ import "@uiw/react-markdown-preview/markdown.css";
 import RouterComponent from "./RouterComponent.tsx";
 import { applyTheme } from "./utils/theme.ts";
 import { applySettings } from "./utils/settings.ts";
+import { SidebarProvider } from "./contexts/SidebarContext";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -26,11 +27,15 @@ const init = async () => {
     ]);
     if (themeRes.ok) applyTheme(await themeRes.json());
     if (settingsRes.ok) applySettings(await settingsRes.json());
-  } catch {}
+  } catch (err) {
+    console.error("Failed to load initial theme/settings", err);
+  }
 
   createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
-      <RouterComponent />
+      <SidebarProvider>
+        <RouterComponent />
+      </SidebarProvider>
     </QueryClientProvider>
   );
 };

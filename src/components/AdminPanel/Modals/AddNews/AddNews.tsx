@@ -12,6 +12,7 @@ export default function AddNews({ onSaved }: { onSaved: () => void }) {
   const [previewImage, setPreviewImage] = useState<Image | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   const reset = () => {
     setForm({ title: "", content: "" });
@@ -21,12 +22,14 @@ export default function AddNews({ onSaved }: { onSaved: () => void }) {
   const handleSave = () => {
     if (!form.title) return;
     setSaving(true);
+    setError("");
     createNews(form.title, form.content, previewImage?.id)
       .then(() => {
         reset();
         setOpen(false);
         onSaved();
       })
+      .catch(() => setError("Не удалось сохранить новость"))
       .finally(() => setSaving(false));
   };
 
@@ -40,6 +43,7 @@ export default function AddNews({ onSaved }: { onSaved: () => void }) {
       </button>
       <CustomModal open={open} onClose={() => setOpen(false)}>
         <h3 className="font-semibold text-base">Добавить новость</h3>
+        {error && <p className="text-sm text-danger">{error}</p>}
         <input
           className="input"
           placeholder="Заголовок"

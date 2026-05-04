@@ -37,12 +37,19 @@ const ImageCard = ({
     setSaving(true);
     renameImage(img.id, trimmed)
       .then(() => { onRenamed(img.id, trimmed); setEditing(false); })
+      .catch(() => {
+        window.alert("Не удалось переименовать изображение");
+      })
       .finally(() => setSaving(false));
   };
 
   const handleDelete = () => {
     if (!window.confirm(`Удалить «${img.name}»? Файлы в хранилище тоже будут удалены.`)) return;
-    deleteImage(img.id).then(() => onDeleted(img.id));
+    deleteImage(img.id)
+      .then(() => onDeleted(img.id))
+      .catch(() => {
+        window.alert("Не удалось удалить изображение");
+      });
   };
 
   return (
@@ -82,9 +89,16 @@ const ImageCard = ({
 const AdminMedia = () => {
   const [images, setImages] = useState<Image[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
 
   const load = useCallback(() => {
-    getMedia("images").then((res) => setImages(res.data as Image[]));
+    setError("");
+    getMedia("images")
+      .then((res) => setImages(res.data as Image[]))
+      .catch(() => {
+        setImages([]);
+        setError("Не удалось загрузить изображения");
+      });
   }, []);
 
   useEffect(() => { load(); }, [load]);
@@ -93,7 +107,11 @@ const AdminMedia = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    uploadImage(file).then(load).finally(() => setUploading(false));
+    setError("");
+    uploadImage(file)
+      .then(load)
+      .catch(() => setError("Не удалось загрузить изображение"))
+      .finally(() => setUploading(false));
     e.target.value = "";
   };
 
@@ -112,6 +130,7 @@ const AdminMedia = () => {
           <input type="file" accept="image/*" className="hidden" onChange={handleUpload} />
         </label>
       </div>
+      {error && <p className="text-sm text-danger">{error}</p>}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {images.map((img) => (
           <ImageCard

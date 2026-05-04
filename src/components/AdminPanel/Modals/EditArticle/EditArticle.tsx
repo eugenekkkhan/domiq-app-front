@@ -21,9 +21,11 @@ export default function EditArticle({
     sectionId: String(article.section_id),
   });
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!open) return;
+    setError("");
     Promise.all([
       getArticle(article.id),
       getSections(),
@@ -31,13 +33,17 @@ export default function EditArticle({
       const a = artRes.data as Article;
       setForm({ title: a.title, content: a.content_markdown, sectionId: String(a.section_id) });
       setSections(secRes.data as Section[]);
+    }).catch(() => {
+      setError("Не удалось загрузить данные статьи");
     });
   }, [open, article.id]);
 
   const handleSave = () => {
     setSaving(true);
+    setError("");
     updateArticle(article.id, form.title, form.content, Number(form.sectionId))
       .then(() => { setOpen(false); onSaved(); })
+      .catch(() => setError("Не удалось сохранить статью"))
       .finally(() => setSaving(false));
   };
 
@@ -53,6 +59,7 @@ export default function EditArticle({
       </button>
       <CustomModal open={open} onClose={() => setOpen(false)}>
         <h3 className="font-semibold text-base">Редактировать статью</h3>
+        {error && <p className="text-sm text-danger">{error}</p>}
         <input
           className="input"
           placeholder="Заголовок"

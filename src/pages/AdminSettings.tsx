@@ -189,12 +189,16 @@ const AdminSettings = () => {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [pickerField, setPickerField] = useState<PickerField | null>(null);
+  const [error, setError] = useState("");
 
   useEffect(() => {
+    setError("");
     getSettingsQuery().then((res) => {
       const s = res.data as Settings;
       setSettings(s);
       setSavedSettings(s);
+    }).catch(() => {
+      setError("Не удалось загрузить настройки");
     });
   }, []);
 
@@ -209,6 +213,7 @@ const AdminSettings = () => {
   const handleSave = () => {
     if (!settings) return;
     setSaving(true);
+    setError("");
     updateSettings(settings)
       .then((res) => {
         const updated = res.data as Settings;
@@ -217,6 +222,9 @@ const AdminSettings = () => {
         applySettings(updated);
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
+      })
+      .catch(() => {
+        setError("Не удалось сохранить настройки");
       })
       .finally(() => setSaving(false));
   };
@@ -242,6 +250,7 @@ const AdminSettings = () => {
           {saved ? "Сохранено ✓" : saving ? "Сохранение…" : "Сохранить"}
         </button>
       </div>
+      {error && <p className="text-sm text-danger">{error}</p>}
 
       <div className="flex flex-col gap-4">
         {/* General */}

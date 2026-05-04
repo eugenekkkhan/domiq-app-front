@@ -8,10 +8,14 @@ export default function AddSection({ onSaved }: { onSaved: () => void }) {
   const [sections, setSections] = useState<Section[]>([]);
   const [form, setForm] = useState({ name: "", parentId: "" });
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!open) return;
-    getSections().then((res) => setSections(res.data as Section[]));
+    setError("");
+    getSections()
+      .then((res) => setSections(res.data as Section[]))
+      .catch(() => setError("Не удалось загрузить разделы"));
   }, [open]);
 
   const reset = () => setForm({ name: "", parentId: "" });
@@ -19,8 +23,10 @@ export default function AddSection({ onSaved }: { onSaved: () => void }) {
   const handleSave = () => {
     if (!form.name) return;
     setSaving(true);
+    setError("");
     createSection(form.name, form.parentId ? Number(form.parentId) : undefined)
       .then(() => { reset(); setOpen(false); onSaved(); })
+      .catch(() => setError("Не удалось сохранить раздел"))
       .finally(() => setSaving(false));
   };
 
@@ -31,6 +37,7 @@ export default function AddSection({ onSaved }: { onSaved: () => void }) {
       </button>
       <CustomModal open={open} onClose={() => setOpen(false)}>
         <h3 className="font-semibold text-base">Добавить раздел</h3>
+        {error && <p className="text-sm text-danger">{error}</p>}
         <input
           className="input"
           placeholder="Название раздела"

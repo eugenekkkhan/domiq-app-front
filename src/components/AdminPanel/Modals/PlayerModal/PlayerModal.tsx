@@ -34,7 +34,8 @@ export default function PlayerModal({
           src={url}
           width="100%"
           height="auto"
-          style={{ borderRadius: 8, background: "#000", aspectRatio: "16/9" }}
+          style={{ background: "#000", aspectRatio: "16/9" }}
+          className='rounded-inner'
           controls
           playing
         />
