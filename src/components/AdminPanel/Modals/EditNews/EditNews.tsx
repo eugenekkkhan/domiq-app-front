@@ -1,17 +1,25 @@
 import { useEffect, useState } from "react";
-import { getNewsItem, updateNews, uploadImage } from "../../../../queries";
+import { Pencil } from "lucide-react";
+import { getNewsItem, updateNews } from "../../../../queries";
 import type { News } from "../../../../types/NewArticle";
 import type { Image } from "../../../../types/Image";
 import { imageUrl } from "../../../../utils/media";
+import { ImagePicker } from "../../../ImagePicker/ImagePicker";
 import CustomMDEditor from "../../../CustomMDEditor/CustomMDEditor";
 import CustomModal from "../CustomModal/CustomModal";
 
-export default function EditNews({ id, onSaved }: { id: number; onSaved: () => void }) {
+export default function EditNews({
+  id,
+  onSaved,
+}: {
+  id: number;
+  onSaved: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ title: "", content: "" });
   const [initial, setInitial] = useState({ title: "", content: "" });
   const [previewImage, setPreviewImage] = useState<Image | null>(null);
-  const [uploading, setUploading] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
@@ -25,29 +33,26 @@ export default function EditNews({ id, onSaved }: { id: number; onSaved: () => v
     });
   }, [open, id]);
 
-  const handleImagePick = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    uploadImage(file)
-      .then((res) => setPreviewImage(res.data as Image))
-      .finally(() => setUploading(false));
-    e.target.value = "";
-  };
-
-  const dirty = form.title !== initial.title || form.content !== initial.content;
+  const dirty =
+    form.title !== initial.title || form.content !== initial.content;
 
   const handleSave = () => {
     setSaving(true);
     updateNews(id, form.title, form.content, previewImage?.id)
-      .then(() => { setOpen(false); onSaved(); })
+      .then(() => {
+        setOpen(false);
+        onSaved();
+      })
       .finally(() => setSaving(false));
   };
 
   return (
     <>
-      <button className="btn btn-primary text-xs px-3 py-1.5" onClick={() => setOpen(true)}>
-        Изменить
+      <button
+        className="rounded-inner text-gray-400 hover:text-primary transition-colors cursor-pointer"
+        onClick={() => setOpen(true)}
+      >
+        <Pencil size={13} />
       </button>
       <CustomModal open={open} onClose={() => setOpen(false)}>
         <h3 className="font-semibold text-base">Редактировать новость</h3>
@@ -64,10 +69,12 @@ export default function EditNews({ id, onSaved }: { id: number; onSaved: () => v
           minHeight={200}
         />
         <div className="flex items-center gap-3">
-          <label className="btn btn-secondary cursor-pointer text-xs">
-            {uploading ? "Загрузка…" : previewImage ? "Сменить превью" : "Добавить превью"}
-            <input type="file" accept="image/*" className="hidden" onChange={handleImagePick} />
-          </label>
+          <button
+            className="btn btn-secondary text-xs"
+            onClick={() => setPickerOpen(true)}
+          >
+            {previewImage ? "Сменить превью" : "Добавить превью"}
+          </button>
           {previewImage && (
             <img
               src={imageUrl(previewImage, "thumbnail")}
@@ -78,7 +85,12 @@ export default function EditNews({ id, onSaved }: { id: number; onSaved: () => v
         </div>
         <div className="flex justify-end gap-2">
           {dirty && (
-            <button className="btn btn-secondary" onClick={() => setForm(initial)}>Сбросить</button>
+            <button
+              className="btn btn-secondary"
+              onClick={() => setForm(initial)}
+            >
+              Сбросить
+            </button>
           )}
           <button
             className="btn btn-primary"
@@ -89,6 +101,11 @@ export default function EditNews({ id, onSaved }: { id: number; onSaved: () => v
           </button>
         </div>
       </CustomModal>
+      <ImagePicker
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onSelect={(img) => setPreviewImage(img)}
+      />
     </>
   );
 }

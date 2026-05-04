@@ -7,12 +7,16 @@ type MainMenuElementProps = {
   isLast?: boolean;
 };
 
-const MainMenuElement = ({ text, to, isLast = false }: MainMenuElementProps) => {
+const MainMenuElement = ({
+  text,
+  to,
+  isLast = false,
+}: MainMenuElementProps) => {
   return (
     <NavLink to={to}>
       <div
         className={`flex items-center justify-between p-[var(--spacing-card)] ${
-          !isLast ? "border-b border-gray-100" : ""
+          !isLast ? "border-b border-border" : ""
         }`}
       >
         <span className="text-[17px] leading-snug">{text}</span>

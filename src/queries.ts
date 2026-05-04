@@ -97,6 +97,10 @@ export const getMedia = (type: "images" | "videos" | "all" = "all") =>
   axios.get(`${BASE}/media`, { params: { type } });
 export const getImage = (id: number) => axios.get(`${BASE}/images/${id}`);
 export const getVideo = (id: number) => axios.get(`${BASE}/videos/${id}`);
+export const renameImage = (id: number, name: string) => api.patch(`${BASE}/images/${id}`, { name });
+export const deleteImage = (id: number) => api.delete(`${BASE}/images/${id}`);
+export const renameVideo = (id: number, name: string) => api.patch(`${BASE}/videos/${id}`, { name });
+export const deleteVideo = (id: number) => api.delete(`${BASE}/videos/${id}`);
 
 export const uploadImage = (file: File, name?: string) => {
   const fd = new FormData();
@@ -104,6 +108,16 @@ export const uploadImage = (file: File, name?: string) => {
   if (name) fd.append("name", name);
   return api.post(`${BASE}/media/images`, fd);
 };
+
+// ---------- Theme ----------
+
+export const getTheme = () => axios.get(`${BASE}/theme`);
+export const updateTheme = (theme: object) => api.patch(`${BASE}/theme`, theme);
+
+// ---------- Settings ----------
+
+export const getSettingsQuery = () => axios.get(`${BASE}/settings`);
+export const updateSettings = (settings: object) => api.patch(`${BASE}/settings`, settings);
 
 export const uploadVideo = (
   file: File,

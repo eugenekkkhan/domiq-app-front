@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Pencil } from "lucide-react";
 import { getSections, updateSection } from "../../../../queries";
 import type { Section } from "../../../../types/Section";
 import CustomModal from "../CustomModal/CustomModal";
@@ -20,9 +21,12 @@ export default function EditSection({
 
   useEffect(() => {
     if (!open) return;
-    setForm({ name: section.name, parentId: section.parent_id ? String(section.parent_id) : "" });
+    setForm({
+      name: section.name,
+      parentId: section.parent_id ? String(section.parent_id) : "",
+    });
     getSections().then((res) =>
-      setSections((res.data as Section[]).filter((s) => s.id !== section.id))
+      setSections((res.data as Section[]).filter((s) => s.id !== section.id)),
     );
   }, [open, section]);
 
@@ -32,15 +36,25 @@ export default function EditSection({
 
   const handleSave = () => {
     setSaving(true);
-    updateSection(section.id, form.name, form.parentId ? Number(form.parentId) : undefined)
-      .then(() => { setOpen(false); onSaved(); })
+    updateSection(
+      section.id,
+      form.name,
+      form.parentId ? Number(form.parentId) : undefined,
+    )
+      .then(() => {
+        setOpen(false);
+        onSaved();
+      })
       .finally(() => setSaving(false));
   };
 
   return (
     <>
-      <button className="btn btn-primary text-xs px-3 py-1.5" onClick={() => setOpen(true)}>
-        Изменить
+      <button
+        className="rounded-inner text-gray-400 hover:text-primary transition-colors cursor-pointer"
+        onClick={() => setOpen(true)}
+      >
+        <Pencil size={13} />
       </button>
       <CustomModal open={open} onClose={() => setOpen(false)}>
         <h3 className="font-semibold text-base">Редактировать раздел</h3>
@@ -57,14 +71,21 @@ export default function EditSection({
         >
           <option value="">— Корневой раздел —</option>
           {sections.map((s) => (
-            <option key={s.id} value={s.id}>{s.name}</option>
+            <option key={s.id} value={s.id}>
+              {s.name}
+            </option>
           ))}
         </select>
         <div className="flex justify-end gap-2">
           {dirty && (
             <button
               className="btn btn-secondary"
-              onClick={() => setForm({ name: section.name, parentId: section.parent_id ? String(section.parent_id) : "" })}
+              onClick={() =>
+                setForm({
+                  name: section.name,
+                  parentId: section.parent_id ? String(section.parent_id) : "",
+                })
+              }
             >
               Сбросить
             </button>

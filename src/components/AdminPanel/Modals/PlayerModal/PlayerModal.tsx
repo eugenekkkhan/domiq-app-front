@@ -23,8 +23,8 @@ export default function PlayerModal({
       >
         {children}
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="bg-white/90 rounded-full p-1.5">
-            <Play size={20} className="text-gray-800" />
+          <div className="bg-card/90 rounded-full p-1.5">
+            <Play size={20} className="text-text" />
           </div>
         </div>
       </div>

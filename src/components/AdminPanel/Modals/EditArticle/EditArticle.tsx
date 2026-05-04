@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Pencil } from "lucide-react";
 import { getArticle, getSections, updateArticle } from "../../../../queries";
 import type { Article } from "../../../../types/Article";
 import type { Section } from "../../../../types/Section";
@@ -47,8 +48,8 @@ export default function EditArticle({
 
   return (
     <>
-      <button className="btn btn-primary text-xs px-3 py-1.5" onClick={() => setOpen(true)}>
-        Изменить
+      <button className="rounded-inner text-gray-400 hover:text-primary transition-colors cursor-pointer" onClick={() => setOpen(true)}>
+        <Pencil size={13} />
       </button>
       <CustomModal open={open} onClose={() => setOpen(false)}>
         <h3 className="font-semibold text-base">Редактировать статью</h3>

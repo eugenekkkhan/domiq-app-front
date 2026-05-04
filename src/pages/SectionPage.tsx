@@ -1,6 +1,10 @@
 import { useParams, NavLink } from "react-router";
 import { useQuery } from "@tanstack/react-query";
-import { getSection, getSectionChildren, getArticlesBySection } from "../queries";
+import {
+  getSection,
+  getSectionChildren,
+  getArticlesBySection,
+} from "../queries";
 import type { Section } from "../types/Section";
 import type { Article } from "../types/Article";
 import { PageSpinner } from "../components/Spinner/Spinner";
@@ -44,7 +48,9 @@ const SectionPage = () => {
                   key={child.id}
                   to={`/sections/${child.id}`}
                   className={`flex items-center justify-between p-[var(--spacing-card)] ${
-                    i < children.length - 1 || articles.length > 0 ? "border-b border-gray-100" : ""
+                    i < children.length - 1 || articles.length > 0
+                      ? "border-b border-border"
+                      : ""
                   }`}
                 >
                   <span className="text-[15px]">{child.name}</span>
@@ -56,7 +62,7 @@ const SectionPage = () => {
                   key={article.id}
                   to={`/articles/${article.id}`}
                   className={`flex items-center justify-between p-[var(--spacing-card)] ${
-                    i < articles.length - 1 ? "border-b border-gray-100" : ""
+                    i < articles.length - 1 ? "border-b border-border" : ""
                   }`}
                 >
                   <span className="text-[15px]">{article.title}</span>
@@ -65,7 +71,9 @@ const SectionPage = () => {
               ))}
             </div>
           ) : (
-            <p className="text-sm text-gray-400 text-center py-8">Раздел пуст</p>
+            <p className="text-sm text-gray-400 text-center py-8">
+              Раздел пуст
+            </p>
           )}
         </>
       )}

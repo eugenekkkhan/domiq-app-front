@@ -8,7 +8,7 @@ const Banner = () => {
         className="relative rounded-outer overflow-hidden flex items-center"
         style={{
           height: "132px",
-          background: "radial-gradient(circle at 90% 135%, #007aff, #003f99 55%)",
+          background: "radial-gradient(circle at 90% 135%, var(--color-primary), color-mix(in srgb, var(--color-primary) 40%, #000) 55%)",
           padding: "16px 20px",
         }}
       >

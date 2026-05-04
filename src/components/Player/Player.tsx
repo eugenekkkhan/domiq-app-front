@@ -1,12 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import ReactPlayer from "react-player";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
+import { ArrowLeft } from "lucide-react";
 import { getVideo } from "../../queries";
 import type { Video } from "../../types/video";
 import { mediaUrl } from "../../utils/media";
 import Spinner from "../Spinner/Spinner";
 
 const PlayerComponent = () => {
+  const navigate = useNavigate();
   const { videoId } = useParams<{ videoId: string }>();
   const { data: video, isLoading } = useQuery({
     queryKey: ["video", videoId],
@@ -24,8 +26,17 @@ const PlayerComponent = () => {
 
   return (
     <div className="min-h-screen bg-black flex flex-col">
-      <div className="p-4 pb-0">
-        <p className="text-white font-medium truncate">{video.name}</p>
+      <div className="p-4 pb-0 flex items-center gap-3 justify-between">
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-1 text-white text-sm font-medium cursor-pointer"
+        >
+          <ArrowLeft size={16} />
+          Назад
+        </button>
+        <p className="text-white font-medium truncate flex-1 text-right">
+          {video.name}
+        </p>
       </div>
       <div className="flex-1 flex items-center">
         <ReactPlayer

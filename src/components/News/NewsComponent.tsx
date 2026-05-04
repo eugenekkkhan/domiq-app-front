@@ -70,17 +70,17 @@ const NewsScroll = ({ news }: { news: News[] }) => {
       {canLeft && (
         <button
           onClick={() => scrollBy(-1)}
-          className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-3 w-7 h-7 rounded-full bg-white shadow-md flex items-center justify-center z-10"
+          className="absolute cursor-pointer left-0 top-1/2 -translate-y-1/2 -translate-x-3 w-7 h-7 rounded-full bg-card shadow-md flex items-center justify-center z-10"
         >
-          <ChevronLeft size={16} className="text-gray-600" />
+          <ChevronLeft size={16} className="text-text/70" />
         </button>
       )}
       {canRight && (
         <button
           onClick={() => scrollBy(1)}
-          className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-3 w-7 h-7 rounded-full bg-white shadow-md flex items-center justify-center z-10"
+          className="absolute cursor-pointer right-0 top-1/2 -translate-y-1/2 translate-x-3 w-7 h-7 rounded-full bg-card shadow-md flex items-center justify-center z-10"
         >
-          <ChevronRight size={16} className="text-gray-600" />
+          <ChevronRight size={16} className="text-text/70" />
         </button>
       )}
     </div>

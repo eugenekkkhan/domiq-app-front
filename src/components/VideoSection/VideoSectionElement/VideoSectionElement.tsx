@@ -33,7 +33,7 @@ const VideoSectionElement = ({
       </div>
       {!isLast && (
         <span
-          className="absolute bottom-0 right-0 h-px bg-gray-100"
+          className="absolute bottom-0 right-0 h-px bg-border"
           style={{ width: "65%" }}
         />
       )}

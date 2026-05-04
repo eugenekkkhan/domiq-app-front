@@ -7,7 +7,7 @@ interface Props extends ComponentProps<"button"> {
   Icon?: LucideIcon;
 }
 
-const ButtonMain = ({ color = "#007aff", text, Icon, className = "", ...props }: Props) => {
+const ButtonMain = ({ color = "var(--color-primary)", text, Icon, className = "", ...props }: Props) => {
   return (
     <button
       className={`flex items-center gap-2 bg-white rounded-outer px-6 py-5 cursor-pointer border-none ${className}`}
