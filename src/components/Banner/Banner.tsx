@@ -1,7 +1,12 @@
 import { NavLink } from "react-router";
-import Image from "../../assets/image 8.png";
+import FallbackImage from "../../assets/image 8.png";
+import { useSettings } from "../../utils/settings";
 
 const Banner = () => {
+  const settings = useSettings();
+  const text = settings?.banner_text || "Видеоинструкция по подключению и работе с камерой";
+  const imageUrl = settings?.banner_image_url ?? FallbackImage;
+
   return (
     <NavLink to="/videos">
       <div
@@ -13,10 +18,10 @@ const Banner = () => {
         }}
       >
         <p className="text-white font-medium leading-snug w-40 text-[15px] z-10">
-          Видеоинструкция по подключению и работе с камерой
+          {text}
         </p>
         <img
-          src={Image}
+          src={imageUrl}
           alt=""
           className="absolute right-0 bottom-0 h-full object-contain object-bottom pointer-events-none select-none"
         />

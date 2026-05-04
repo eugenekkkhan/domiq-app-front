@@ -11,6 +11,7 @@ import { useMemo, useRef, useState, useEffect } from "react";
 import type { Image as MediaImage } from "../../types/Image";
 import { ImagePicker } from "../ImagePicker/ImagePicker";
 import { useThemeMode } from "../../utils/theme";
+import { useToast } from "../../contexts/ToastContext";
 import "./CustomMDEditor.css";
 
 const insertBrCommand: ICommand = {
@@ -51,7 +52,7 @@ const insertEmptyLinkCommand: ICommand = {
   },
 };
 
-const insertImageUploadCommand: ICommand = {
+const createInsertImageUploadCommand = (onError: (msg: string) => void): ICommand => ({
   name: "insert-image-upload",
   keyCommand: "insert-image-upload",
   buttonProps: { "aria-label": "Upload image" },
@@ -76,12 +77,12 @@ const insertImageUploadCommand: ICommand = {
       } catch {
         api.setSelectionRange({ start, end: start + placeholder.length });
         api.replaceSelection("");
-        window.alert("Не удалось загрузить изображение. Попробуйте еще раз.");
+        onError("Не удалось загрузить изображение. Попробуйте еще раз.");
       }
     };
     input.click();
   },
-};
+});
 
 const CustomMDEditor = ({
   value,
@@ -99,6 +100,12 @@ const CustomMDEditor = ({
   maxHeight?: number;
 }) => {
   const { mode } = useThemeMode();
+  const { addToast } = useToast();
+
+  const insertImageUploadCommand = useMemo(
+    () => createInsertImageUploadCommand((msg) => addToast(msg, "error")),
+    [addToast],
+  );
 
   const computeResponsive = () => {
     if (typeof window === "undefined") return 400;

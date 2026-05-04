@@ -6,8 +6,9 @@ import { applySettings } from "../utils/settings";
 import { imageUrl } from "../utils/media";
 import AdminPage from "./AdminPage";
 import { ImagePicker } from "../components/ImagePicker/ImagePicker";
+import FallbackBannerImage from "../assets/image 8.png";
 
-type PickerField = "logo_url" | "favicon_url" | "og_image_url";
+type PickerField = "logo_url" | "favicon_url" | "og_image_url" | "banner_image_url";
 
 const isDirty = (a: Settings, b: Settings) =>
   a.project_name !== b.project_name ||
@@ -16,7 +17,29 @@ const isDirty = (a: Settings, b: Settings) =>
   a.meta_title !== b.meta_title ||
   a.meta_description !== b.meta_description ||
   a.meta_keywords !== b.meta_keywords ||
-  a.og_image_url !== b.og_image_url;
+  a.og_image_url !== b.og_image_url ||
+  a.banner_text !== b.banner_text ||
+  a.banner_image_url !== b.banner_image_url;
+
+const BannerPreview = ({ text, imageUrl }: { text: string; imageUrl: string | null }) => (
+  <div
+    className="relative rounded-outer overflow-hidden flex items-center select-none pointer-events-none"
+    style={{
+      height: "100px",
+      background: "radial-gradient(circle at 90% 135%, var(--color-primary), color-mix(in srgb, var(--color-primary) 40%, #000) 55%)",
+      padding: "16px 20px",
+    }}
+  >
+    <p className="text-white font-medium leading-snug w-36 text-[13px] z-10">
+      {text || "Текст баннера…"}
+    </p>
+    <img
+      src={imageUrl ?? FallbackBannerImage}
+      alt=""
+      className="absolute right-0 bottom-0 h-full object-contain object-bottom"
+    />
+  </div>
+);
 
 const InputRow = ({
   label,
@@ -133,7 +156,7 @@ const SeoPreview = ({
           {projectName || "Название сайта"}
         </p>
         <p className="text-xs text-gray-500 truncate leading-tight">
-          https://yourdomain.com
+          {window.location.host}
         </p>
       </div>
     </div>
@@ -278,6 +301,35 @@ const AdminSettings = () => {
               value={settings.favicon_url}
               onPick={() => setPickerField("favicon_url")}
               onClear={() => set("favicon_url", null)}
+            />
+          </div>
+        </div>
+
+        {/* Banner */}
+        <div>
+          <p className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-2 px-1">
+            Баннер
+          </p>
+          <div className="card overflow-hidden">
+            <InputRow
+              label="Текст баннера"
+              value={settings.banner_text}
+              onChange={(v) => set("banner_text", v)}
+              placeholder="Видеоинструкция по подключению и работе с камерой"
+              multiline
+            />
+            <ImagePickerField
+              label="Изображение баннера"
+              hint="Декоративная картинка справа"
+              value={settings.banner_image_url}
+              onPick={() => setPickerField("banner_image_url")}
+              onClear={() => set("banner_image_url", null)}
+            />
+          </div>
+          <div className="mt-3">
+            <BannerPreview
+              text={settings.banner_text}
+              imageUrl={settings.banner_image_url}
             />
           </div>
         </div>

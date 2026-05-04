@@ -10,6 +10,7 @@ const MainMenu = () => {
     staleTime: Infinity,
   });
 
+  // const sections = (data ?? []).filter((s) => !s.parent_id && s.enabled);
   const sections = (data ?? []).filter((s) => !s.parent_id);
 
   if (sections.length === 0) return null;

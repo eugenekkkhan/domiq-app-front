@@ -112,7 +112,7 @@ const AdminPageNavbar = () => {
 
       {/* Desktop sidebar */}
       <div
-        className={`hidden md:flex fixed top-0 left-0 bottom-0 bg-card border-r border-border z-40 flex-col transition-all duration-300 ${
+        className={`hidden md:flex fixed top-0 left-0 bottom-0 bg-card border-r border-border z-40 flex-col transition-all duration-300 overflow-hidden ${
           isSidebarOpen ? "w-52" : "w-0"
         }`}
       >

@@ -7,4 +7,6 @@ export interface Settings {
   meta_description: string;
   meta_keywords: string;
   og_image_url: string | null;
+  banner_text: string;
+  banner_image_url: string | null;
 }

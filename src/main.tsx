@@ -7,6 +7,8 @@ import RouterComponent from "./RouterComponent.tsx";
 import { applyTheme } from "./utils/theme.ts";
 import { applySettings } from "./utils/settings.ts";
 import { SidebarProvider } from "./contexts/SidebarContext";
+import { ToastProvider } from "./contexts/ToastContext";
+import { ToastContainer } from "./components/Toast/ToastContainer";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -33,10 +35,13 @@ const init = async () => {
 
   createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
-      <SidebarProvider>
-        <RouterComponent />
-      </SidebarProvider>
-    </QueryClientProvider>
+      <ToastProvider>
+        <SidebarProvider>
+          <RouterComponent />
+        </SidebarProvider>
+        <ToastContainer />
+      </ToastProvider>
+    </QueryClientProvider>,
   );
 };
 
