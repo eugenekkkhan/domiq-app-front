@@ -1,0 +1,88 @@
+/* CustomMDEditor Theme Styles */
+.md-editor-themed {
+  width: 100%;
+}
+
+.md-editor-themed .w-md-editor {
+  background-color: var(--color-card);
+  border-color: var(--color-border);
+}
+
+.md-editor-themed .w-md-editor-toolbar {
+  background-color: var(--color-card);
+  border-bottom-color: var(--color-border);
+}
+
+.md-editor-themed .w-md-editor-toolbar button:hover {
+  background-color: var(--color-bg);
+}
+
+.md-editor-themed .w-md-editor-toolbar button.active {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+.md-editor-themed .w-md-editor-content {
+  background-color: var(--color-card);
+}
+
+.md-editor-themed .w-md-editor-input-wrapper textarea {
+  color: var(--color-text);
+  background-color: var(--color-card);
+  caret-color: var(--color-primary);
+}
+
+.md-editor-themed .w-md-editor-input-wrapper::before {
+  background-color: var(--color-card);
+}
+
+.md-editor-themed .w-md-editor-preview {
+  background-color: var(--color-card);
+  color: var(--color-text);
+}
+
+.md-editor-themed .w-md-editor-preview h1,
+.md-editor-themed .w-md-editor-preview h2,
+.md-editor-themed .w-md-editor-preview h3,
+.md-editor-themed .w-md-editor-preview h4,
+.md-editor-themed .w-md-editor-preview h5,
+.md-editor-themed .w-md-editor-preview h6 {
+  color: var(--color-text);
+}
+
+.md-editor-themed .w-md-editor-preview a {
+  color: var(--color-primary);
+}
+
+.md-editor-themed .w-md-editor-preview code {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+.md-editor-themed .w-md-editor-preview pre {
+  background-color: var(--color-bg);
+  border-color: var(--color-border);
+}
+
+.md-editor-themed .w-md-editor-preview blockquote {
+  border-left-color: var(--color-primary);
+  color: var(--color-text);
+}
+
+.md-editor-themed .w-md-editor-preview table {
+  border-color: var(--color-border);
+}
+
+.md-editor-themed .w-md-editor-preview table th,
+.md-editor-themed .w-md-editor-preview table td {
+  border-color: var(--color-border);
+  background-color: var(--color-card);
+}
+
+.md-editor-themed .w-md-editor-resizing {
+  background-color: var(--color-primary);
+}
+
+.md-editor-themed .w-md-editor-resizing::after {
+  background-color: var(--color-primary);
+}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Pencil } from "lucide-react";
 import { getArticle, getSections, updateArticle } from "../../../../queries";
 import type { Article } from "../../../../types/Article";
 import type { Section } from "../../../../types/Section";
@@ -20,9 +21,11 @@ export default function EditArticle({
     sectionId: String(article.section_id),
   });
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     if (!open) return;
+    setError("");
     Promise.all([
       getArticle(article.id),
       getSections(),
@@ -30,13 +33,17 @@ export default function EditArticle({
       const a = artRes.data as Article;
       setForm({ title: a.title, content: a.content_markdown, sectionId: String(a.section_id) });
       setSections(secRes.data as Section[]);
+    }).catch(() => {
+      setError("Не удалось загрузить данные статьи");
     });
   }, [open, article.id]);
 
   const handleSave = () => {
     setSaving(true);
+    setError("");
     updateArticle(article.id, form.title, form.content, Number(form.sectionId))
       .then(() => { setOpen(false); onSaved(); })
+      .catch(() => setError("Не удалось сохранить статью"))
       .finally(() => setSaving(false));
   };
 
@@ -47,11 +54,12 @@ export default function EditArticle({
 
   return (
     <>
-      <button className="btn btn-primary text-xs px-3 py-1.5" onClick={() => setOpen(true)}>
-        Изменить
+      <button className="rounded-inner text-gray-400 hover:text-primary transition-colors cursor-pointer" onClick={() => setOpen(true)}>
+        <Pencil size={13} />
       </button>
       <CustomModal open={open} onClose={() => setOpen(false)}>
         <h3 className="font-semibold text-base">Редактировать статью</h3>
+        {error && <p className="text-sm text-danger">{error}</p>}
         <input
           className="input"
           placeholder="Заголовок"

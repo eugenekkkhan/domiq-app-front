@@ -7,6 +7,8 @@ import AdminNews from "./pages/AdminNews";
 import AdminVideos from "./pages/AdminVideos";
 import AdminSections from "./pages/AdminSections";
 import AdminMedia from "./pages/AdminMedia";
+import AdminTheme from "./pages/AdminTheme";
+import AdminSettings from "./pages/AdminSettings";
 import VideosPage from "./pages/VideosPage";
 import PlayerComponent from "./components/Player/Player";
 import NewArticlePage from "./pages/NewArticlePage";
@@ -39,6 +41,8 @@ const RouterComponent = () => (
       <Route path="/admin/videos" element={<RequireAuth><AdminVideos /></RequireAuth>} />
       <Route path="/admin/sections" element={<RequireAuth><AdminSections /></RequireAuth>} />
       <Route path="/admin/media" element={<RequireAuth><AdminMedia /></RequireAuth>} />
+      <Route path="/admin/theme" element={<RequireAuth><AdminTheme /></RequireAuth>} />
+      <Route path="/admin/settings" element={<RequireAuth><AdminSettings /></RequireAuth>} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />

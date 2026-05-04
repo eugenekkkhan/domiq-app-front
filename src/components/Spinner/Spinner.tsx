@@ -3,7 +3,7 @@ const Spinner = ({ size = 28, white }: { size?: number; white?: boolean }) => (
     className={`rounded-full animate-spin shrink-0 ${
       white
         ? "border-[2.5px] border-white/30 border-t-white"
-        : "border-[2.5px] border-gray-200 border-t-primary"
+        : "border-[2.5px] border-border border-t-primary"
     }`}
     style={{ width: size, height: size }}
   />

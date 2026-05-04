@@ -18,7 +18,7 @@ api.interceptors.response.use(
       window.location.href = "/admin";
     }
     return Promise.reject(err);
-  }
+  },
 );
 
 // ---------- Auth ----------
@@ -33,11 +33,14 @@ export const getSection = (id: number) => axios.get(`${BASE}/sections/${id}`);
 export const getSectionChildren = (id: number) =>
   axios.get(`${BASE}/sections/${id}/children`);
 export const createSection = (name: string, parentId?: number) =>
-  api.post(`${BASE}/sections`, { name, parent_id: parentId ?? null });
+  api.post("/sections", { name, parent_id: parentId ?? null });
 export const updateSection = (id: number, name: string, parentId?: number) =>
-  api.patch(`${BASE}/sections/${id}`, { name, parent_id: parentId ?? null });
-export const deleteSection = (id: number) =>
-  api.delete(`${BASE}/sections/${id}`);
+  api.patch(`/sections/${id}`, { name, parent_id: parentId ?? null });
+export const toggleSectionEnabled = (id: number, enabled: boolean) =>
+  api.patch(`/sections/${id}/enabled`, { enabled });
+export const reorderSections = (items: { id: number; position: number }[]) =>
+  api.put("/sections/reorder", items);
+export const deleteSection = (id: number) => api.delete(`/sections/${id}`);
 
 // ---------- Articles ----------
 
@@ -48,21 +51,25 @@ export const getArticlesBySection = (sectionId: number) =>
 export const createArticle = (
   title: string,
   contentMarkdown: string,
-  sectionId: number
-) => api.post(`${BASE}/articles`, { title, content_markdown: contentMarkdown, section_id: sectionId });
-export const updateArticle = (
-  id: number,
-  title: string,
-  contentMarkdown: string,
-  sectionId: number
+  sectionId: number,
 ) =>
-  api.patch(`${BASE}/articles/${id}`, {
+  api.post("/articles", {
     title,
     content_markdown: contentMarkdown,
     section_id: sectionId,
   });
-export const deleteArticle = (id: number) =>
-  api.delete(`${BASE}/articles/${id}`);
+export const updateArticle = (
+  id: number,
+  title: string,
+  contentMarkdown: string,
+  sectionId: number,
+) =>
+  api.patch(`/articles/${id}`, {
+    title,
+    content_markdown: contentMarkdown,
+    section_id: sectionId,
+  });
+export const deleteArticle = (id: number) => api.delete(`/articles/${id}`);
 
 // ---------- News ----------
 
@@ -71,9 +78,9 @@ export const getNewsItem = (id: number) => axios.get(`${BASE}/news/${id}`);
 export const createNews = (
   title: string,
   content: string,
-  previewImageId?: number
+  previewImageId?: number,
 ) =>
-  api.post(`${BASE}/news`, {
+  api.post("/news", {
     title,
     content,
     ...(previewImageId !== undefined && { preview_image_id: previewImageId }),
@@ -82,14 +89,14 @@ export const updateNews = (
   id: number,
   title: string,
   content: string,
-  previewImageId?: number
+  previewImageId?: number,
 ) =>
-  api.patch(`${BASE}/news/${id}`, {
+  api.patch(`/news/${id}`, {
     title,
     content,
     ...(previewImageId !== undefined && { preview_image_id: previewImageId }),
   });
-export const deleteNews = (id: number) => api.delete(`${BASE}/news/${id}`);
+export const deleteNews = (id: number) => api.delete(`/news/${id}`);
 
 // ---------- Media ----------
 
@@ -97,23 +104,40 @@ export const getMedia = (type: "images" | "videos" | "all" = "all") =>
   axios.get(`${BASE}/media`, { params: { type } });
 export const getImage = (id: number) => axios.get(`${BASE}/images/${id}`);
 export const getVideo = (id: number) => axios.get(`${BASE}/videos/${id}`);
+export const renameImage = (id: number, name: string) =>
+  api.patch(`/images/${id}`, { name });
+export const deleteImage = (id: number) => api.delete(`/images/${id}`);
+export const renameVideo = (id: number, name: string) =>
+  api.patch(`/videos/${id}`, { name });
+export const deleteVideo = (id: number) => api.delete(`/videos/${id}`);
 
 export const uploadImage = (file: File, name?: string) => {
   const fd = new FormData();
   fd.append("file", file);
   if (name) fd.append("name", name);
-  return api.post(`${BASE}/media/images`, fd);
+  return api.post("/media/images", fd);
 };
+
+// ---------- Theme ----------
+
+export const getTheme = () => axios.get(`${BASE}/theme`);
+export const updateTheme = (theme: object) => api.patch("/theme", theme);
+
+// ---------- Settings ----------
+
+export const getSettingsQuery = () => axios.get(`${BASE}/settings`);
+export const updateSettings = (settings: object) =>
+  api.patch("/settings", settings);
 
 export const uploadVideo = (
   file: File,
   name?: string,
-  thumbnailImageId?: number
+  thumbnailImageId?: number,
 ) => {
   const fd = new FormData();
   fd.append("file", file);
   if (name) fd.append("name", name);
   if (thumbnailImageId !== undefined)
     fd.append("thumbnail_image_id", thumbnailImageId.toString());
-  return api.post(`${BASE}/media/videos`, fd);
+  return api.post("/media/videos", fd);
 };

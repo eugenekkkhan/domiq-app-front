@@ -19,6 +19,12 @@ const AdminVideos = () => {
     .filter((v) => v.name.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => b.id - a.id);
 
+  const handleRenamed = (id: number, name: string) =>
+    setVideos((prev) => prev.map((v) => (v.id === id ? { ...v, name } : v)));
+
+  const handleDeleted = (id: number) =>
+    setVideos((prev) => prev.filter((v) => v.id !== id));
+
   return (
     <AdminPage>
       <div className="flex gap-2 flex-wrap">
@@ -33,13 +39,16 @@ const AdminVideos = () => {
         )}
         <AddVideo onSaved={load} />
       </div>
-      <p className="text-xs text-gray-400">
-        Видео можно только загружать — редактирование и удаление недоступны в текущей версии API.
-      </p>
       {filtered.length > 0 ? (
         <div className="card overflow-hidden">
           {filtered.map((video, i) => (
-            <VideoCard key={video.id} video={video} isLast={i === filtered.length - 1} />
+            <VideoCard
+              key={video.id}
+              video={video}
+              isLast={i === filtered.length - 1}
+              onRenamed={handleRenamed}
+              onDeleted={handleDeleted}
+            />
           ))}
         </div>
       ) : (
