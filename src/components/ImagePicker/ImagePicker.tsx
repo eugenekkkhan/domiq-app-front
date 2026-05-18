@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { X, ZoomIn } from "lucide-react";
 import { getMedia } from "../../queries";
 import type { Image } from "../../types/Image";
 import { imageUrl } from "../../utils/media";
 import SkeletonImg from "../SkeletonImg/SkeletonImg";
+import Spinner from "../Spinner/Spinner";
 
 export const ImagePicker = ({
   open,
@@ -21,11 +22,8 @@ export const ImagePicker = ({
   const [previewImg, setPreviewImg] = useState<Image | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (!open) return;
-    setSearch("");
+  const loadImages = useCallback(() => {
     setError("");
-    setPreviewImg(null);
     setLoading(true);
     getMedia("images")
       .then((res) => setImages(res.data as Image[]))
@@ -34,8 +32,15 @@ export const ImagePicker = ({
         setError("Не удалось загрузить изображения");
       })
       .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (!open) return;
+    setSearch("");
+    setPreviewImg(null);
+    loadImages();
     setTimeout(() => searchRef.current?.focus(), 50);
-  }, [open]);
+  }, [open, loadImages]);
 
   useEffect(() => {
     if (!open) return;
@@ -87,9 +92,12 @@ export const ImagePicker = ({
           </div>
           <div className="flex-1 overflow-y-auto p-3">
             {loading ? (
-              <p className="text-sm text-gray-400 text-center py-8">Загрузка…</p>
+              <div className="flex justify-center py-8"><Spinner /></div>
             ) : error ? (
-              <p className="text-sm text-danger text-center py-8">{error}</p>
+              <div className="flex flex-col items-center gap-3 py-8">
+                <p className="text-sm text-danger">{error}</p>
+                <button className="btn btn-secondary text-xs py-1.5 px-3" onClick={loadImages}>Обновить</button>
+              </div>
             ) : filtered.length === 0 ? (
               <p className="text-sm text-gray-400 text-center py-8">
                 {images.length === 0 ? "Нет изображений" : "Ничего не найдено"}

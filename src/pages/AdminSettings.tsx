@@ -6,6 +6,7 @@ import { applySettings } from "../utils/settings";
 import { imageUrl } from "../utils/media";
 import AdminPage from "./AdminPage";
 import { ImagePicker } from "../components/ImagePicker/ImagePicker";
+import AsyncView from "../components/AsyncView/AsyncView";
 import FallbackBannerImage from "../assets/image 8.png";
 
 type PickerField = "logo_url" | "favicon_url" | "og_image_url" | "banner_image_url";
@@ -140,30 +141,30 @@ const SeoPreview = ({
   projectName: string;
   faviconUrl: string | null;
 }) => (
-  <div className="p-4 font-sans border border-border rounded-inner bg-white max-w-lg">
+  <div className="p-4 font-sans border border-border rounded-inner bg-card max-w-lg">
     <div className="flex items-center gap-2 mb-1">
       {faviconUrl ? (
         <img
           src={faviconUrl}
           alt=""
-          className="w-7 h-7 rounded-full border object-cover"
+          className="w-7 h-7 rounded-full border border-border object-cover"
         />
       ) : (
-        <div className="w-4 h-4 rounded-sm bg-gray-200 shrink-0" />
+        <div className="w-4 h-4 rounded-sm bg-border shrink-0" />
       )}
       <div className="min-w-0">
-        <p className="text-sm text-gray-800 truncate leading-tight">
+        <p className="text-sm text-text/80 truncate leading-tight">
           {projectName || "Название сайта"}
         </p>
-        <p className="text-xs text-gray-500 truncate leading-tight">
+        <p className="text-xs text-text/50 truncate leading-tight">
           {window.location.host}
         </p>
       </div>
     </div>
-    <p className="text-base text-blue-700 font-medium leading-snug mt-1 truncate">
+    <p className="text-base text-primary font-medium leading-snug mt-1 truncate">
       {title || projectName || "Заголовок страницы"}
     </p>
-    <p className="text-sm text-gray-600 mt-0.5 line-clamp-2">
+    <p className="text-sm text-text/60 mt-0.5 line-clamp-2">
       {description || "Описание страницы для поисковых систем..."}
     </p>
   </div>
@@ -180,7 +181,7 @@ const SocialPreview = ({
   projectName: string;
   ogImageUrl: string | null;
 }) => (
-  <div className="font-sans border border-border rounded-inner bg-white max-w-lg overflow-hidden">
+  <div className="font-sans border border-border rounded-inner bg-card max-w-lg overflow-hidden">
     {ogImageUrl ? (
       <img
         src={ogImageUrl}
@@ -188,18 +189,18 @@ const SocialPreview = ({
         className="w-full aspect-[1.91/1] object-cover object-center"
       />
     ) : (
-      <div className="w-full aspect-[1.91/1] bg-gray-100 flex items-center justify-center">
-        <p className="text-xs text-gray-400">OG Image не выбран</p>
+      <div className="w-full aspect-[1.91/1] bg-bg flex items-center justify-center">
+        <p className="text-xs text-text/40">OG Image не выбран</p>
       </div>
     )}
     <div className="px-3 py-2.5 border-t border-border">
-      <p className="text-xs text-gray-500 uppercase tracking-wide truncate">
+      <p className="text-xs text-text/50 uppercase tracking-wide truncate">
         {window.location.host}
       </p>
-      <p className="text-sm font-semibold text-gray-900 mt-0.5 truncate">
+      <p className="text-sm font-semibold text-text mt-0.5 truncate">
         {title || projectName || "Заголовок страницы"}
       </p>
-      <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">
+      <p className="text-xs text-text/50 mt-0.5 line-clamp-2">
         {description || "Описание страницы для соцсетей..."}
       </p>
     </div>
@@ -214,8 +215,9 @@ const AdminSettings = () => {
   const [pickerField, setPickerField] = useState<PickerField | null>(null);
   const [error, setError] = useState("");
 
-  useEffect(() => {
+  const loadSettings = () => {
     setError("");
+    setSettings(null);
     getSettingsQuery().then((res) => {
       const s = res.data as Settings;
       setSettings(s);
@@ -223,6 +225,10 @@ const AdminSettings = () => {
     }).catch(() => {
       setError("Не удалось загрузить настройки");
     });
+  };
+
+  useEffect(() => {
+    loadSettings();
   }, []);
 
   const set = <K extends keyof Settings>(key: K, value: Settings[K]) => {
@@ -255,7 +261,7 @@ const AdminSettings = () => {
   if (!settings)
     return (
       <AdminPage>
-        <p className="text-sm text-gray-400 text-center py-8">Загрузка…</p>
+        <AsyncView loading={!error} error={error} onRetry={loadSettings}>{null}</AsyncView>
       </AdminPage>
     );
 
@@ -286,7 +292,7 @@ const AdminSettings = () => {
               label="Название проекта"
               value={settings.project_name}
               onChange={(v) => set("project_name", v)}
-              placeholder="DOMIQ"
+              placeholder={settings.project_name}
             />
             <ImagePickerField
               label="Логотип шапки"

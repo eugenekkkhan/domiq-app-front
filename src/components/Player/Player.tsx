@@ -34,9 +34,14 @@ const PlayerComponent = () => {
           <ArrowLeft size={16} />
           Назад
         </button>
-        <p className="text-white font-medium truncate flex-1 text-right">
-          {video.name}
-        </p>
+        <div className="flex flex-col items-end flex-1 min-w-0">
+          <p className="text-white font-medium truncate w-full text-right">
+            {video.name}
+          </p>
+          {video.uploader_name && (
+            <p className="text-white/50 text-xs truncate">{video.uploader_name}</p>
+          )}
+        </div>
       </div>
       <div className="flex-1 flex items-center">
         <ReactPlayer

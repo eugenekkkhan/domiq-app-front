@@ -5,6 +5,7 @@ export type Image = {
   mime: string;
   width: number;
   height: number;
+  uploader_id: number;
   object_key_original: string;
   object_key_large: string;
   object_key_medium: string;

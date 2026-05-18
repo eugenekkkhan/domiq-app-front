@@ -20,29 +20,29 @@ const queryClient = new QueryClient({
   },
 });
 
-const init = async () => {
-  try {
-    const base = import.meta.env.VITE_API_URL as string;
-    const [themeRes, settingsRes] = await Promise.all([
-      fetch(`${base}/theme`),
-      fetch(`${base}/settings`),
-    ]);
-    if (themeRes.ok) applyTheme(await themeRes.json());
-    if (settingsRes.ok) applySettings(await settingsRes.json());
-  } catch (err) {
-    console.error("Failed to load initial theme/settings", err);
-  }
+const root = createRoot(document.getElementById("root")!);
 
-  createRoot(document.getElementById("root")!).render(
-    <QueryClientProvider client={queryClient}>
-      <ToastProvider>
-        <SidebarProvider>
-          <RouterComponent />
-        </SidebarProvider>
-        <ToastContainer />
-      </ToastProvider>
-    </QueryClientProvider>,
-  );
+root.render(
+  <QueryClientProvider client={queryClient}>
+    <ToastProvider>
+      <SidebarProvider>
+        <RouterComponent />
+      </SidebarProvider>
+      <ToastContainer />
+    </ToastProvider>
+  </QueryClientProvider>,
+);
+
+// Load theme and settings in the background — app renders immediately with defaults.
+// Requests are given a hard timeout so they never hang indefinitely.
+const fetchTimeout = (url: string, ms = 5000): Promise<Response> => {
+  const ctrl = new AbortController();
+  const id = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, { signal: ctrl.signal }).finally(() => clearTimeout(id));
 };
 
-init();
+const base = import.meta.env.VITE_API_URL as string;
+Promise.allSettled([
+  fetchTimeout(`${base}/theme`).then((r) => { if (r.ok) r.json().then(applyTheme); }),
+  fetchTimeout(`${base}/settings`).then((r) => { if (r.ok) r.json().then(applySettings); }),
+]);

@@ -34,13 +34,17 @@ export const getSectionChildren = (id: number) =>
   axios.get(`${BASE}/sections/${id}/children`);
 export const createSection = (name: string, parentId?: number) =>
   api.post("/sections", { name, parent_id: parentId ?? null });
-export const updateSection = (id: number, name: string, parentId?: number) =>
-  api.patch(`/sections/${id}`, { name, parent_id: parentId ?? null });
-export const toggleSectionEnabled = (id: number, enabled: boolean) =>
-  api.patch(`/sections/${id}/enabled`, { enabled });
-export const reorderSections = (items: { id: number; position: number }[]) =>
-  api.put("/sections/reorder", items);
+export const updateSection = (id: number, name: string, parentId?: number, isVisible?: boolean) =>
+  api.patch(`/sections/${id}`, {
+    name,
+    parent_id: parentId ?? null,
+    ...(isVisible !== undefined && { is_visible: isVisible }),
+  });
 export const deleteSection = (id: number) => api.delete(`/sections/${id}`);
+export const toggleSectionVisible = (id: number, is_visible: boolean) =>
+  api.patch(`/sections/${id}/visible`, { is_visible });
+export const reorderSections = (items: { id: number; index: number }[]) =>
+  api.put("/sections/reorder", items);
 
 // ---------- Articles ----------
 
@@ -128,6 +132,17 @@ export const updateTheme = (theme: object) => api.patch("/theme", theme);
 export const getSettingsQuery = () => axios.get(`${BASE}/settings`);
 export const updateSettings = (settings: object) =>
   api.patch("/settings", settings);
+
+// ---------- Supervisors ----------
+
+export const registerSupervisor = (nickname: string, password: string) =>
+  api.post("/auth/register_supervisor", { nickname, password });
+export const listSupervisors = () => api.get("/auth/supervisors");
+export const listUsers = () => api.get("/auth/users");
+export const removeSupervisor = (id: number) =>
+  api.delete("/auth/remove_supervisor", { data: { id } });
+export const updateSupervisor = (id: number, nickname: string, password: string) =>
+  api.patch(`/auth/supervisors/${id}`, { nickname, password });
 
 export const uploadVideo = (
   file: File,

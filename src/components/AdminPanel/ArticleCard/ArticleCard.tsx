@@ -3,17 +3,21 @@ import { Trash2 } from "lucide-react";
 import { deleteArticle } from "../../../queries";
 import type { Article } from "../../../types/Article";
 import EditArticle from "../Modals/EditArticle/EditArticle";
+import { isAdmin, getCurrentUserId } from "../../../utils/auth";
 
 const ArticleCard = ({
   article,
   onDelete,
   isLast,
+  authorName,
 }: {
   article: Article;
   onDelete: () => void;
   isLast: boolean;
+  authorName?: string;
 }) => {
   const [removing, setRemoving] = useState(false);
+  const canMutate = isAdmin() || article.author_id === getCurrentUserId();
 
   const handleDelete = () => {
     if (!confirm(`Удалить статью «${article.title}»?`)) return;
@@ -34,16 +38,18 @@ const ArticleCard = ({
           <span className="font-medium text-sm truncate flex-1 min-w-0">
             {article.title}
           </span>
-          <EditArticle article={article} onSaved={onDelete} />
-          <button
-            className="rounded-inner text-gray-400 hover:text-danger transition-colors cursor-pointer"
-            onClick={handleDelete}
-          >
-            <Trash2 size={13} />
-          </button>
+          {canMutate && <EditArticle article={article} onSaved={onDelete} />}
+          {canMutate && (
+            <button
+              className="rounded-inner text-gray-400 hover:text-danger transition-colors cursor-pointer"
+              onClick={handleDelete}
+            >
+              <Trash2 size={13} />
+            </button>
+          )}
         </div>
         <span className="text-xs text-gray-400">
-          ID: {article.id} · Раздел: {article.section_id}
+          ID: {article.id} · Раздел: {article.section_id}{authorName ? ` · ${authorName}` : ""}
         </span>
       </div>
     </div>

@@ -4,17 +4,21 @@ import { deleteNews } from "../../../queries";
 import type { News } from "../../../types/NewArticle";
 import { convertTimeStampToDate } from "../../../utils/convertTime";
 import EditNews from "../Modals/EditNews/EditNews";
+import { isAdmin, getCurrentUserId } from "../../../utils/auth";
 
 const NewsCard = ({
   news,
   onDelete,
   isLast,
+  authorName,
 }: {
   news: News;
   onDelete: () => void;
   isLast: boolean;
+  authorName?: string;
 }) => {
   const [removing, setRemoving] = useState(false);
+  const canMutate = isAdmin() || news.author_id === getCurrentUserId();
 
   const handleDelete = () => {
     if (!confirm(`Удалить новость «${news.title}»?`)) return;
@@ -35,17 +39,19 @@ const NewsCard = ({
           <span className="font-medium text-sm truncate flex-1 min-w-0">
             {news.title}
           </span>
-          <EditNews id={news.id} onSaved={onDelete} />
-          <button
-            className="rounded-inner text-gray-400 hover:text-danger transition-colors cursor-pointer"
-            onClick={handleDelete}
-          >
-            <Trash2 size={13} />
-          </button>
+          {canMutate && <EditNews id={news.id} onSaved={onDelete} />}
+          {canMutate && (
+            <button
+              className="rounded-inner text-gray-400 hover:text-danger transition-colors cursor-pointer"
+              onClick={handleDelete}
+            >
+              <Trash2 size={13} />
+            </button>
+          )}
         </div>
         <span className="text-xs text-gray-400 truncate">{news.short}</span>
         <span className="text-xs text-gray-400">
-          ID: {news.id} · {convertTimeStampToDate(news.created_at)}
+          ID: {news.id} · {convertTimeStampToDate(news.created_at)}{authorName ? ` · ${authorName}` : ""}
         </span>
       </div>
     </div>

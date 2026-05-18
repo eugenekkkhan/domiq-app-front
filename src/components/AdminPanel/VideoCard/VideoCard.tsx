@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import type { Video } from "../../../types/video";
+import { isAdmin, getCurrentUserId } from "../../../utils/auth";
 import { imageUrl, mediaUrl } from "../../../utils/media";
 import { secsToMins, convertTimeStampToDate } from "../../../utils/convertTime";
 import PlayerModal from "../Modals/PlayerModal/PlayerModal";
@@ -14,13 +15,16 @@ const VideoCard = ({
   isLast,
   onRenamed,
   onDeleted,
+  uploaderName,
 }: {
   video: Video;
   isLast: boolean;
   onRenamed?: (id: number, name: string) => void;
   onDeleted?: (id: number) => void;
+  uploaderName?: string;
 }) => {
   const videoSrc = mediaUrl(video.bucket, video.object_key);
+  const canMutate = isAdmin() || video.uploader_id === getCurrentUserId();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(video.name);
   const [saving, setSaving] = useState(false);
@@ -115,7 +119,7 @@ const VideoCard = ({
               <span className="font-medium text-sm truncate flex-1 min-w-0">
                 {video.name || "Без названия"}
               </span>
-              {onRenamed && (
+              {onRenamed && canMutate && (
                 <button
                   onClick={startEdit}
                   className="text-gray-400 hover:text-primary cursor-pointer shrink-0"
@@ -123,7 +127,7 @@ const VideoCard = ({
                   <Pencil size={13} />
                 </button>
               )}
-              {onDeleted && (
+              {onDeleted && canMutate && (
                 <button
                   onClick={() => setConfirmDelete(true)}
                   className="text-gray-400 hover:text-danger cursor-pointer shrink-0"
@@ -134,7 +138,7 @@ const VideoCard = ({
             </div>
           )}
           <span className="text-xs text-gray-400">
-            ID: {video.id} · {secsToMins(video.duration_sec)}
+            ID: {video.id} · {secsToMins(video.duration_sec)}{uploaderName ? ` · ${uploaderName}` : ""}
           </span>
           <span className="text-xs text-gray-400">
             {convertTimeStampToDate(video.created_at)}

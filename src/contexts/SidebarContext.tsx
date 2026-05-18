@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 
 interface SidebarContextType {
   isOpen: boolean;
@@ -7,8 +7,20 @@ interface SidebarContextType {
 
 const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
 
+const COLLAPSE_BREAKPOINT = 928;
+
 export const SidebarProvider = ({ children }: { children: ReactNode }) => {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(() => window.innerWidth >= COLLAPSE_BREAKPOINT);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < COLLAPSE_BREAKPOINT) {
+        setIsOpen(false);
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const toggleSidebar = () => {
     setIsOpen((prev) => !prev);

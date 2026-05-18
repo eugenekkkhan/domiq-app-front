@@ -3,6 +3,7 @@ import { getTheme, updateTheme } from "../queries";
 import type { Theme } from "../types/Theme";
 import { applyTheme, DEFAULT_THEME } from "../utils/theme";
 import AdminPage from "./AdminPage";
+import AsyncView from "../components/AsyncView/AsyncView";
 
 const LIGHT_FIELDS: { key: keyof Theme; label: string }[] = [
   { key: "light_primary", label: "Акцент" },
@@ -66,8 +67,9 @@ const AdminTheme = () => {
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
 
-  useEffect(() => {
+  const loadTheme = () => {
     setError("");
+    setTheme(null);
     getTheme().then((res) => {
       const t = res.data as Theme;
       setTheme(t);
@@ -75,6 +77,10 @@ const AdminTheme = () => {
     }).catch(() => {
       setError("Не удалось загрузить тему");
     });
+  };
+
+  useEffect(() => {
+    loadTheme();
   }, []);
 
   const set = (key: keyof Theme, value: string) => {
@@ -112,7 +118,7 @@ const AdminTheme = () => {
   if (!theme)
     return (
       <AdminPage>
-        <p className="text-sm text-gray-400 text-center py-8">Загрузка…</p>
+        <AsyncView loading={!error} error={error} onRetry={loadTheme}>{null}</AsyncView>
       </AdminPage>
     );
 

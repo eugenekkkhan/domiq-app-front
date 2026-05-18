@@ -21,11 +21,14 @@ const SectionPage = () => {
     enabled: !!sectionId,
   });
 
-  const { data: children = [] } = useQuery({
+  const { data: rawChildren = [] } = useQuery({
     queryKey: ["section-children", sectionId],
     queryFn: () => getSectionChildren(id).then((r) => r.data as Section[]),
     enabled: !!sectionId,
   });
+  const children = rawChildren
+    .filter((c) => c.is_visible)
+    .sort((a, b) => a.index - b.index);
 
   const { data: articles = [] } = useQuery({
     queryKey: ["section-articles", sectionId],

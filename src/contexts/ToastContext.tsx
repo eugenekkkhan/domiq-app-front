@@ -3,8 +3,8 @@ import {
   useContext,
   useState,
   useCallback,
-  ReactNode,
 } from "react";
+import type { ReactNode } from "react";
 
 export interface Toast {
   id: string;

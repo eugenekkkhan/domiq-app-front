@@ -10,30 +10,41 @@ import {
   ImageIcon,
   Palette,
   Settings,
+  ShieldCheck,
   Sun,
   Moon,
   LogOut,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { removeToken } from "./utils/auth";
+import { removeToken, isAdmin, getNickname, getRole, removeNickname } from "./utils/auth";
 import { useThemeMode } from "./utils/theme";
 import { useSidebar } from "./contexts/SidebarContext";
 
-const navItems = [
-  { to: "/admin/articles", label: "Статьи", Icon: FileText },
-  { to: "/admin/news", label: "Новости", Icon: Newspaper },
-  { to: "/admin/videos", label: "Видео", Icon: Video },
-  { to: "/admin/sections", label: "Разделы", Icon: LayoutGrid },
-  { to: "/admin/media", label: "Медиа", Icon: ImageIcon },
-  { to: "/admin/theme", label: "Тема", Icon: Palette },
-  { to: "/admin/settings", label: "Настройки", Icon: Settings },
+const allNavItems = [
+  { to: "/admin/articles", label: "Статьи", Icon: FileText, adminOnly: false },
+  { to: "/admin/news", label: "Новости", Icon: Newspaper, adminOnly: false },
+  { to: "/admin/videos", label: "Видео", Icon: Video, adminOnly: false },
+  { to: "/admin/sections", label: "Разделы", Icon: LayoutGrid, adminOnly: false },
+  { to: "/admin/media", label: "Медиа", Icon: ImageIcon, adminOnly: false },
+  { to: "/admin/theme", label: "Тема", Icon: Palette, adminOnly: true },
+  { to: "/admin/settings", label: "Настройки", Icon: Settings, adminOnly: true },
+  { to: "/admin/supervisors", label: "Модераторы", Icon: ShieldCheck, adminOnly: true },
 ];
 
+const roleLabel: Record<string, string> = {
+  admin: "Администратор",
+  moderator: "Модератор",
+};
+
 const SidebarContent = ({ onNav }: { onNav?: () => void }) => {
+  const navItems = allNavItems.filter((item) => !item.adminOnly || isAdmin());
   const { mode, toggle } = useThemeMode();
+  const nickname = getNickname();
+  const role = getRole();
   const handleLogout = () => {
     removeToken();
+    removeNickname();
     window.location.href = "/admin";
   };
 
@@ -57,6 +68,24 @@ const SidebarContent = ({ onNav }: { onNav?: () => void }) => {
         ))}
       </div>
       <div className="p-3 border-t border-border flex flex-col gap-0.5">
+        {(nickname || role) && (
+          <div className="flex items-center gap-2 px-3 py-2 mb-0.5">
+            {nickname && (
+              <span className="text-sm font-medium text-text truncate flex-1 min-w-0">
+                {nickname}
+              </span>
+            )}
+            {role && (
+              <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full shrink-0 ${
+                role === "admin"
+                  ? "bg-primary/15 text-primary"
+                  : "bg-gray-400/15 text-gray-400"
+              }`}>
+                {roleLabel[role] ?? role}
+              </span>
+            )}
+          </div>
+        )}
         <button
           onClick={toggle}
           className="flex items-center gap-3 w-full px-3 py-2.5 rounded-inner text-sm font-medium text-text/60 hover:bg-bg transition-colors cursor-pointer"
@@ -125,7 +154,7 @@ const AdminPageNavbar = () => {
       {/* Toggle sidebar button */}
       <button
         onClick={toggleSidebar}
-        className="hidden md:flex fixed left-0 top-1/2 -translate-y-1/2 z-50 p-2 bg-card border border-border rounded-r-inner text-text/60 hover:text-text hover:bg-bg transition-colors cursor-pointer"
+        className="hidden md:flex fixed left-0 top-1/2 -translate-y-1/2 z-50 p-2 bg-card border border-border border-l-0 rounded-r-inner text-text/60 hover:text-text hover:bg-bg transition-colors cursor-pointer"
         style={{
           left: isSidebarOpen ? "208px" : "0",
           transition: "left 300ms",

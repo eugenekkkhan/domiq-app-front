@@ -3,6 +3,7 @@ import { Pencil } from "lucide-react";
 import { getSections, updateSection } from "../../../../queries";
 import type { Section } from "../../../../types/Section";
 import CustomModal from "../CustomModal/CustomModal";
+import { useToast } from "../../../../contexts/ToastContext";
 
 export default function EditSection({
   section,
@@ -19,6 +20,7 @@ export default function EditSection({
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const { addToast } = useToast();
 
   useEffect(() => {
     if (!open) return;
@@ -50,7 +52,14 @@ export default function EditSection({
         setOpen(false);
         onSaved();
       })
-      .catch(() => setError("Не удалось сохранить раздел"))
+      .catch((err) => {
+        if (err?.response?.status === 403) {
+          addToast("Это не ваш раздел", "error");
+          setOpen(false);
+        } else {
+          setError("Не удалось сохранить раздел");
+        }
+      })
       .finally(() => setSaving(false));
   };
 

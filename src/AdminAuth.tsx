@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { login } from "./queries";
-import { setToken } from "./utils/auth";
+import { setToken, setNickname } from "./utils/auth";
 
 const AdminAuth = () => {
   const [form, setForm] = useState({ nickname: "", password: "", error: "" });
@@ -12,6 +12,7 @@ const AdminAuth = () => {
     login(form.nickname, form.password)
       .then((res) => {
         setToken(res.data.token);
+        setNickname(res.data.user.nickname);
         window.location.href = "/admin/articles";
       })
       .catch(() => {

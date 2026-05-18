@@ -22,7 +22,7 @@ const ThemeToggle = () => {
 
 const Header = () => {
   const settings = useSettings();
-  const projectName = settings?.project_name ?? "DOMIQ";
+  const projectName = settings?.project_name ?? "";
   const logoUrl = settings?.logo_url;
 
   return (
@@ -66,15 +66,18 @@ const Header = () => {
   );
 };
 
-const Footer = () => (
-  <footer className="bg-card border-t border-border">
-    <div className="max-w-2xl mx-auto px-4 h-12 flex items-center justify-center">
-      <p className="text-xs text-gray-400">
-        © {new Date().getFullYear()} DOMIQ
-      </p>
-    </div>
-  </footer>
-);
+const Footer = () => {
+  const settings = useSettings();
+  return (
+    <footer className="bg-card border-t border-border">
+      <div className="max-w-2xl mx-auto px-4 h-12 flex items-center justify-center">
+        <p className="text-xs text-gray-400">
+          © {new Date().getFullYear()} {settings?.project_name || ""}
+        </p>
+      </div>
+    </footer>
+  );
+};
 
 export const BackButton = ({ label = "Назад" }: { label?: string }) => {
   const navigate = useNavigate();

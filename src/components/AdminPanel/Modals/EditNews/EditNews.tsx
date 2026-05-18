@@ -19,6 +19,7 @@ export default function EditNews({
   const [form, setForm] = useState({ title: "", content: "" });
   const [initial, setInitial] = useState({ title: "", content: "" });
   const [previewImage, setPreviewImage] = useState<Image | null>(null);
+  const [initialPreviewId, setInitialPreviewId] = useState<number | undefined>(undefined);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
@@ -32,13 +33,16 @@ export default function EditNews({
       setForm(f);
       setInitial(f);
       setPreviewImage(n.preview_image ?? null);
+      setInitialPreviewId(n.preview_image_id);
     }).catch(() => {
       setError("Не удалось загрузить новость");
     });
   }, [open, id]);
 
   const dirty =
-    form.title !== initial.title || form.content !== initial.content;
+    form.title !== initial.title ||
+    form.content !== initial.content ||
+    previewImage?.id !== initialPreviewId;
 
   const handleSave = () => {
     setSaving(true);

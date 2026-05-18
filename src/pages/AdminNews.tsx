@@ -1,19 +1,30 @@
 import { useEffect, useState, useCallback } from "react";
 import { getNews } from "../queries";
+import { useUsers } from "../hooks/useUsers";
 import type { News } from "../types/NewArticle";
 import NewsCard from "../components/AdminPanel/NewsCard/NewsCard";
 import AddNews from "../components/AdminPanel/Modals/AddNews/AddNews";
 import AdminPage from "./AdminPage";
+import AsyncView from "../components/AsyncView/AsyncView";
 
 const AdminNews = () => {
   const [news, setNews] = useState<News[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [search, setSearch] = useState("");
 
   const load = useCallback(() => {
-    getNews().then((res) => setNews(res.data as News[]));
+    setLoading(true);
+    setError("");
+    getNews()
+      .then((res) => setNews(res.data as News[]))
+      .catch(() => setError("Не удалось загрузить новости"))
+      .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => { load(); }, [load]);
+
+  const users = useUsers();
 
   const filtered = news
     .filter((n) =>
@@ -36,15 +47,17 @@ const AdminNews = () => {
         )}
         <AddNews onSaved={load} />
       </div>
-      {filtered.length > 0 ? (
-        <div className="card overflow-hidden">
-          {filtered.map((item, i) => (
-            <NewsCard key={item.id} news={item} onDelete={load} isLast={i === filtered.length - 1} />
-          ))}
-        </div>
-      ) : (
-        <p className="text-sm text-gray-400 text-center py-8">Новости не найдены</p>
-      )}
+      <AsyncView loading={loading} error={error} onRetry={load}>
+        {filtered.length > 0 ? (
+          <div className="card overflow-hidden">
+            {filtered.map((item, i) => (
+              <NewsCard key={item.id} news={item} onDelete={load} isLast={i === filtered.length - 1} authorName={users.get(item.author_id)?.nickname} />
+            ))}
+          </div>
+        ) : (
+          <p className="text-sm text-gray-400 text-center py-8">Новости не найдены</p>
+        )}
+      </AsyncView>
     </AdminPage>
   );
 };

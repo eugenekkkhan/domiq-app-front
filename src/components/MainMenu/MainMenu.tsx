@@ -10,8 +10,8 @@ const MainMenu = () => {
     staleTime: Infinity,
   });
 
-  // const sections = (data ?? []).filter((s) => !s.parent_id && s.enabled);
-  const sections = (data ?? []).filter((s) => !s.parent_id);
+  const sections = (data ?? []).filter((s) => !s.parent_id && s.is_visible)
+    .sort((a, b) => a.index - b.index);
 
   if (sections.length === 0) return null;
 

@@ -1,27 +1,32 @@
 import { useState } from "react";
-import { Trash2, ChevronUp, ChevronDown } from "lucide-react";
+import { Trash2, GripVertical } from "lucide-react";
 import { deleteSection } from "../../../queries";
 import type { Section } from "../../../types/Section";
 import EditSection from "../Modals/EditSection/EditSection";
+import { isAdmin, getCurrentUserId } from "../../../utils/auth";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 const SectionCard = ({
   section,
   onDelete,
-  onMoveUp,
-  onMoveDown,
-  onToggleEnabled,
+  onToggleVisible,
+  isDraggable,
   isLast,
-  isFirst,
+  authorName,
 }: {
   section: Section;
   onDelete: () => void;
-  onMoveUp?: () => void;
-  onMoveDown?: () => void;
-  onToggleEnabled?: () => void;
+  onToggleVisible?: () => void;
+  isDraggable?: boolean;
   isLast: boolean;
-  isFirst?: boolean;
+  authorName?: string;
 }) => {
   const [removing, setRemoving] = useState(false);
+  const canMutate = isAdmin() || section.author_id === getCurrentUserId();
+
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: section.id });
 
   const handleDelete = () => {
     if (!confirm(`Удалить раздел «${section.name}»? Статьи внутри останутся.`))
@@ -34,42 +39,33 @@ const SectionCard = ({
 
   if (removing) return null;
 
-  const showReorder = onMoveUp !== undefined || onMoveDown !== undefined;
-
   return (
     <div
-      className={`flex items-center gap-2 p-[var(--spacing-card)] ${!isLast ? "border-b border-border" : ""}`}
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition }}
+      className={`flex items-center gap-2 p-[var(--spacing-card)] ${!isLast ? "border-b border-border" : ""} ${isDragging ? "opacity-50 bg-bg z-50" : ""}`}
     >
-      {showReorder && (
-        <div className="flex flex-col shrink-0">
-          <button
-            onClick={onMoveUp}
-            disabled={isFirst}
-            className="text-gray-400 hover:text-text disabled:opacity-20 cursor-pointer disabled:cursor-default transition-colors"
-          >
-            <ChevronUp size={15} />
-          </button>
-          <button
-            onClick={onMoveDown}
-            disabled={isLast}
-            className="text-gray-400 hover:text-text disabled:opacity-20 cursor-pointer disabled:cursor-default transition-colors"
-          >
-            <ChevronDown size={15} />
-          </button>
-        </div>
+      {isDraggable && (
+        <button
+          className="text-gray-400 hover:text-text cursor-grab active:cursor-grabbing shrink-0 touch-none"
+          {...attributes}
+          {...listeners}
+        >
+          <GripVertical size={15} />
+        </button>
       )}
 
-      {onToggleEnabled && (
+      {onToggleVisible && canMutate && (
         <button
-          onClick={onToggleEnabled}
-          title={section.enabled ? "Скрыть" : "Показать"}
+          onClick={onToggleVisible}
+          title={section.is_visible ? "Скрыть" : "Показать"}
           className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors ${
-            section.enabled ? "bg-primary" : "bg-gray-300"
+            section.is_visible ? "bg-primary" : "bg-gray-300"
           }`}
         >
           <span
             className={`absolute top-0.5 h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
-              section.enabled ? "translate-x-[18px]" : "translate-x-0.5"
+              section.is_visible ? "translate-x-[18px]" : "translate-x-0.5"
             }`}
           />
         </button>
@@ -77,20 +73,23 @@ const SectionCard = ({
 
       <div className="flex flex-col gap-0.5 min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
-          <span className={`font-medium text-sm truncate flex-1 min-w-0 ${!section.enabled ? "text-gray-400" : ""}`}>
+          <span className={`font-medium text-sm truncate flex-1 min-w-0 ${!section.is_visible ? "text-gray-400" : ""}`}>
             {section.name}
           </span>
-          <EditSection section={section} onSaved={onDelete} />
-          <button
-            className="rounded-inner text-gray-400 hover:text-danger transition-colors cursor-pointer"
-            onClick={handleDelete}
-          >
-            <Trash2 size={13} />
-          </button>
+          {canMutate && <EditSection section={section} onSaved={onDelete} />}
+          {canMutate && (
+            <button
+              className="rounded-inner text-gray-400 hover:text-danger transition-colors cursor-pointer"
+              onClick={handleDelete}
+            >
+              <Trash2 size={13} />
+            </button>
+          )}
         </div>
         <span className="text-xs text-gray-400">
           ID: {section.id}
           {section.parent_id ? ` · Родитель: ${section.parent_id}` : " · Корневой"}
+          {authorName ? ` · ${authorName}` : ""}
         </span>
       </div>
     </div>

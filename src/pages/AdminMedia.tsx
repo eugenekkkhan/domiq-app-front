@@ -1,24 +1,30 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { getMedia, uploadImage, renameImage, deleteImage } from "../queries";
+import { useUsers } from "../hooks/useUsers";
 import type { Image } from "../types/Image";
 import { imageUrl } from "../utils/media";
 import AdminPage from "./AdminPage";
+import AsyncView from "../components/AsyncView/AsyncView";
 import SkeletonImg from "../components/SkeletonImg/SkeletonImg";
 import { Pencil, Trash2, Check, X, ZoomIn } from "lucide-react";
 import { useToast } from "../contexts/ToastContext";
 import CustomModal from "../components/AdminPanel/Modals/CustomModal/CustomModal";
+import { isAdmin, getCurrentUserId } from "../utils/auth";
 
 const ImageCard = ({
   img,
   onRenamed,
   onDeleted,
   onPreview,
+  uploaderName,
 }: {
   img: Image;
   onRenamed: (id: number, name: string) => void;
   onDeleted: (id: number) => void;
   onPreview: (img: Image) => void;
+  uploaderName?: string;
 }) => {
+  const canMutate = isAdmin() || img.uploader_id === getCurrentUserId();
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(img.name);
   const [saving, setSaving] = useState(false);
@@ -94,11 +100,11 @@ const ImageCard = ({
           ) : (
             <div className="flex items-center gap-1 mb-0.5">
               <p className="text-xs text-text truncate font-medium flex-1 min-w-0">{img.name}</p>
-              <button onClick={startEdit} className="text-gray-400 hover:text-primary cursor-pointer shrink-0"><Pencil size={12} /></button>
-              <button onClick={() => setConfirmDelete(true)} className="text-gray-400 hover:text-danger cursor-pointer shrink-0"><Trash2 size={12} /></button>
+              {canMutate && <button onClick={startEdit} className="text-gray-400 hover:text-primary cursor-pointer shrink-0"><Pencil size={12} /></button>}
+              {canMutate && <button onClick={() => setConfirmDelete(true)} className="text-gray-400 hover:text-danger cursor-pointer shrink-0"><Trash2 size={12} /></button>}
             </div>
           )}
-          <p className="text-xs text-gray-400">ID: {img.id} · {img.width}×{img.height}</p>
+          <p className="text-xs text-gray-400">ID: {img.id} · {img.width}×{img.height}{uploaderName ? ` · ${uploaderName}` : ""}</p>
         </div>
       </div>
 
@@ -125,18 +131,23 @@ const ImageCard = ({
 
 const AdminMedia = () => {
   const [images, setImages] = useState<Image[]>([]);
+  const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [previewImg, setPreviewImg] = useState<Image | null>(null);
 
+  const users = useUsers();
+
   const load = useCallback(() => {
+    setLoading(true);
     setError("");
     getMedia("images")
       .then((res) => setImages(res.data as Image[]))
       .catch(() => {
         setImages([]);
         setError("Не удалось загрузить изображения");
-      });
+      })
+      .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => { load(); }, [load]);
@@ -175,21 +186,23 @@ const AdminMedia = () => {
           <input type="file" accept="image/*" className="hidden" onChange={handleUpload} />
         </label>
       </div>
-      {error && <p className="text-sm text-danger">{error}</p>}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        {images.map((img) => (
-          <ImageCard
-            key={img.id}
-            img={img}
-            onRenamed={handleRenamed}
-            onDeleted={handleDeleted}
-            onPreview={setPreviewImg}
-          />
-        ))}
-      </div>
-      {images.length === 0 && (
-        <p className="text-sm text-gray-400 text-center py-8">Изображения не найдены</p>
-      )}
+      <AsyncView loading={loading} error={error} onRetry={load}>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          {images.map((img) => (
+            <ImageCard
+              key={img.id}
+              img={img}
+              onRenamed={handleRenamed}
+              onDeleted={handleDeleted}
+              onPreview={setPreviewImg}
+              uploaderName={users.get(img.uploader_id)?.nickname}
+            />
+          ))}
+        </div>
+        {images.length === 0 && (
+          <p className="text-sm text-gray-400 text-center py-8">Изображения не найдены</p>
+        )}
+      </AsyncView>
 
       {previewImg && (
         <div

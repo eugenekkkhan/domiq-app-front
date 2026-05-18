@@ -1,5 +1,5 @@
 import { BrowserRouter, Route, Routes, Navigate } from "react-router";
-import { isAuthenticated } from "./utils/auth";
+import { isAuthenticated, isAdmin } from "./utils/auth";
 import App from "./App";
 import AdminAuth from "./AdminAuth";
 import AdminArticles from "./pages/AdminArticles";
@@ -9,6 +9,7 @@ import AdminSections from "./pages/AdminSections";
 import AdminMedia from "./pages/AdminMedia";
 import AdminTheme from "./pages/AdminTheme";
 import AdminSettings from "./pages/AdminSettings";
+import AdminSupervisors from "./pages/AdminSupervisors";
 import VideosPage from "./pages/VideosPage";
 import PlayerComponent from "./components/Player/Player";
 import NewArticlePage from "./pages/NewArticlePage";
@@ -18,6 +19,9 @@ import ArticlePage from "./pages/ArticlePage";
 
 const RequireAuth = ({ children }: { children: React.ReactNode }) =>
   isAuthenticated() ? <>{children}</> : <Navigate to="/admin" replace />;
+
+const RequireAdmin = ({ children }: { children: React.ReactNode }) =>
+  isAdmin() ? <>{children}</> : <Navigate to="/admin/articles" replace />;
 
 const RouterComponent = () => (
   <BrowserRouter>
@@ -41,8 +45,9 @@ const RouterComponent = () => (
       <Route path="/admin/videos" element={<RequireAuth><AdminVideos /></RequireAuth>} />
       <Route path="/admin/sections" element={<RequireAuth><AdminSections /></RequireAuth>} />
       <Route path="/admin/media" element={<RequireAuth><AdminMedia /></RequireAuth>} />
-      <Route path="/admin/theme" element={<RequireAuth><AdminTheme /></RequireAuth>} />
-      <Route path="/admin/settings" element={<RequireAuth><AdminSettings /></RequireAuth>} />
+      <Route path="/admin/theme" element={<RequireAuth><RequireAdmin><AdminTheme /></RequireAdmin></RequireAuth>} />
+      <Route path="/admin/settings" element={<RequireAuth><RequireAdmin><AdminSettings /></RequireAdmin></RequireAuth>} />
+      <Route path="/admin/supervisors" element={<RequireAuth><RequireAdmin><AdminSupervisors /></RequireAdmin></RequireAuth>} />
 
       {/* Fallback */}
       <Route path="*" element={<Navigate to="/" replace />} />

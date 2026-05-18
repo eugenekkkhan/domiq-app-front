@@ -27,7 +27,10 @@ const VideoSectionElement = ({
               ? video.name.charAt(0).toUpperCase() + video.name.slice(1)
               : "Без названия"}
           </p>
-          <p className="text-sm text-gray-400 mt-0.5">{secsToMins(video.duration_sec)}</p>
+          <p className="text-sm text-gray-400 mt-0.5">
+            {secsToMins(video.duration_sec)}
+            {video.uploader_name && ` · ${video.uploader_name}`}
+          </p>
         </div>
         <ChevronRight size={18} className="text-gray-300 shrink-0 ml-2" />
       </div>
