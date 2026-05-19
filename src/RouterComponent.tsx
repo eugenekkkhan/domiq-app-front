@@ -11,12 +11,26 @@ import AdminNews from "./pages/AdminNews";
 import AdminVideos from "./pages/AdminVideos";
 import { getCookie } from "./utils/utils";
 import { useBackButton } from "./customHooks/useBackButton";
+import { useMaxBackButton } from "./customHooks/useMaxBackButton";
+import MaxPage from "./pages/MaxPage";
 
 const RouterComponent = () => {
   return (
     <BrowserRouter>
-      <MainRoutes />
+      <Routes>
+        <Route path="/max/*" element={<MaxRoutes />} />
+        <Route path="/*" element={<MainRoutes />} />
+      </Routes>
     </BrowserRouter>
+  );
+};
+
+const MaxRoutes = () => {
+  useMaxBackButton();
+  return (
+    <Routes>
+      <Route index element={<MaxPage />} />
+    </Routes>
   );
 };
 

@@ -4,7 +4,15 @@ import RouterComponent from "./RouterComponent.tsx";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { sdkInit } from "./utils/sdkInitialisation.ts";
+import { maxSdkInit } from "./utils/maxSdkInit.ts";
 
 const root = createRoot(document.getElementById("root")!);
-sdkInit();
+
+if (window.location.pathname.startsWith("/max")) {
+  // Max route: load Max SDK, then Telegram mock for shared UI components
+  maxSdkInit().then(() => sdkInit());
+} else {
+  sdkInit();
+}
+
 root.render(<RouterComponent />);

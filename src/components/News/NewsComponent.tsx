@@ -112,14 +112,14 @@ type NewsItem = {
   ID: number;
 };
 
-const NewsComponent = () => {
+const NewsComponent = ({ userId }: { userId?: string } = {}) => {
   const [newsData, setNewsData] = useState<NewsItem[]>([]);
   const [uniqueItems, setUniqueItems] = useState<NewsItem[]>([]);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const sliderRef = useRef<SlickSlider | null>(null);
 
   useEffect(() => {
-    getAllNews(initData.user()?.id.toString()).then((res) => {
+    getAllNews(userId ?? initData.user()?.id.toString()).then((res) => {
       const incoming = (res.data as NewsItem[]) || [];
       const normalized = incoming.slice().reverse(); // avoid mutating res.data
       setUniqueItems(normalized);
