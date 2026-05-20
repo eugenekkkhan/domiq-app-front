@@ -12,7 +12,13 @@ const loadMaxScript = (): Promise<void> =>
     document.head.appendChild(script);
   });
 
-export const maxSdkInit = async () => {
+export const maxSdkInit = async (): Promise<Record<string, string> | undefined> => {
   await loadMaxScript();
   window.WebApp?.ready();
+  const tp = window.WebApp?.themeParams;
+  if (!tp) return undefined;
+  // Filter out undefined values so the merge in sdkInit works cleanly
+  return Object.fromEntries(
+    Object.entries(tp).filter(([, v]) => v !== undefined)
+  ) as Record<string, string>;
 };

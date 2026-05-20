@@ -10,7 +10,25 @@ import {
   viewport,
 } from "@telegram-apps/sdk";
 
-export const sdkInit = async () => {
+const defaultThemeParams = {
+  accent_text_color: "#007aff",
+  section_header_text_color: "#6d6d72",
+  destructive_text_color: "#ff3b30",
+  hint_color: "#8e8e93",
+  button_color: "#007aff",
+  secondary_bg_color: "#efeff4",
+  bottom_bar_bg_color: "#f2f2f2",
+  text_color: "#000000",
+  header_bg_color: "#f8f8f8",
+  subtitle_text_color: "#8e8e93",
+  section_separator_color: "#c8c7cc",
+  section_bg_color: "#ffffff",
+  link_color: "#007aff",
+  bg_color: "#ffffff",
+  button_text_color: "#ffffff",
+} as const;
+
+export const sdkInit = async (themeOverride?: Record<string, string>) => {
   if (!(await isTMA("complete"))) {
     const noInsets = {
       left: 0,
@@ -18,23 +36,9 @@ export const sdkInit = async () => {
       bottom: 0,
       right: 0,
     } as const;
-    const themeParams = {
-      accent_text_color: "#007aff",
-      section_header_text_color: "#6d6d72",
-      destructive_text_color: "#ff3b30",
-      hint_color: "#8e8e93",
-      button_color: "#007aff",
-      secondary_bg_color: "#efeff4",
-      bottom_bar_bg_color: "#f2f2f2",
-      text_color: "#000000",
-      header_bg_color: "#f8f8f8",
-      subtitle_text_color: "#8e8e93",
-      section_separator_color: "#c8c7cc",
-      section_bg_color: "#ffffff",
-      link_color: "#007aff",
-      bg_color: "#ffffff",
-      button_text_color: "#ffffff",
-    } as const;
+    const themeParams = themeOverride
+      ? { ...defaultThemeParams, ...themeOverride }
+      : defaultThemeParams;
 
     // const themeParams = {
     //   destructive_text_color: "#ff6767",

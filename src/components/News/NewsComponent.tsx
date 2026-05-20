@@ -132,7 +132,7 @@ const NewsComponent = ({ userId }: { userId?: string } = {}) => {
       }
       setNewsData(list);
     });
-  }, []);
+  }, [userId]);
 
   const settings: Settings = {
     dots: uniqueItems.length > 3, // use slick dots only when >3 unique items

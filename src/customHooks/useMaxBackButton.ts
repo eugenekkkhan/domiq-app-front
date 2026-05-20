@@ -1,8 +1,9 @@
 import { useCallback, useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useLocation } from 'react-router';
 
 export const useMaxBackButton = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const handleButtonClick = useCallback(() => {
     navigate(-1);
   }, [navigate]);
@@ -11,7 +12,8 @@ export const useMaxBackButton = () => {
     const backButton = window.WebApp?.BackButton;
     if (!backButton) return;
 
-    if (location.pathname === '/max') {
+    const isRoot = location.pathname === '/max' || location.pathname === '/max/';
+    if (isRoot) {
       backButton.hide();
     } else {
       backButton.show();

@@ -30,6 +30,7 @@ const MaxRoutes = () => {
   return (
     <Routes>
       <Route index element={<MaxPage />} />
+      <Route path="news/:articleId" element={<NewArticlePage />} />
     </Routes>
   );
 };
