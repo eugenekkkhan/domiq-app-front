@@ -26,6 +26,7 @@ const RouterComponent = () => {
 };
 
 const MaxRoutes = () => {
+  useCustomTheme();
   useMaxBackButton();
   return (
     <Routes>

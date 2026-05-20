@@ -46,7 +46,7 @@ const MainMenuElement = ({
               }}
             />
           )}
-          <p>{text}</p>
+          <p style={{ color: themeParams.textColor() }}>{text}</p>
         </div>
         {!isLast && (
           <span
