@@ -30,45 +30,16 @@ const defaultThemeParams = {
 
 export const sdkInit = async (themeOverride?: Record<string, string>, forceMock = false) => {
   if (forceMock || !isTMA()) {
-    const noInsets = {
-      left: 0,
-      top: 0,
-      bottom: 0,
-      right: 0,
-    } as const;
-    const themeParams = themeOverride
+    const noInsets = { left: 0, top: 0, bottom: 0, right: 0 } as const;
+    const theme = themeOverride
       ? { ...defaultThemeParams, ...themeOverride }
       : defaultThemeParams;
 
-    // const themeParams = {
-    //   destructive_text_color: "#ff6767",
-    //   section_separator_color: "#435044",
-    //   bottom_bar_bg_color: "#2e3b2f",
-    //   secondary_bg_color: "#18222d",
-    //   hint_color: "#deecdd",
-    //   link_color: "#97ec97",
-    //   button_text_color: "#000000",
-    //   section_header_text_color: "#7f847f",
-    //   accent_text_color: "#97ec97",
-    //   bg_color: "#212a22",
-    //   header_bg_color: "#2e3b2f",
-    //   section_bg_color: "#21303f",
-    //   button_color: "#97ec97",
-    //   text_color: "#ffffff",
-    //   subtitle_text_color: "#deecdd",
-    // } as const;
-
     mockTelegramEnv({
       launchParams: {
-        tgWebAppThemeParams: themeParams,
+        tgWebAppThemeParams: theme,
         tgWebAppData: new URLSearchParams([
-          [
-            "user",
-            JSON.stringify({
-              id: 1,
-              first_name: "Pavel",
-            }),
-          ],
+          ["user", JSON.stringify({ id: 1, first_name: "Pavel" })],
           ["hash", ""],
           ["signature", ""],
           ["auth_date", Date.now().toString()],
@@ -78,40 +49,40 @@ export const sdkInit = async (themeOverride?: Record<string, string>, forceMock 
         tgWebAppPlatform: "tdesktop",
       },
       onEvent(e) {
-        if (e[0] === "web_app_request_theme") {
-          return emitEvent("theme_changed", { theme_params: themeParams });
-        }
-        if (e[0] === "web_app_request_viewport") {
+        if (e[0] === "web_app_request_theme")
+          return emitEvent("theme_changed", { theme_params: theme });
+        if (e[0] === "web_app_request_viewport")
           return emitEvent("viewport_changed", {
             height: window.innerHeight,
             width: window.innerWidth,
             is_expanded: true,
             is_state_stable: true,
           });
-        }
-        if (e[0] === "web_app_request_content_safe_area") {
+        if (e[0] === "web_app_request_content_safe_area")
           return emitEvent("content_safe_area_changed", noInsets);
-        }
-        if (e[0] === "web_app_request_safe_area") {
+        if (e[0] === "web_app_request_safe_area")
           return emitEvent("safe_area_changed", noInsets);
-        }
       },
     });
   }
 
   init();
-
   backButton.mount();
   initData.restore();
   miniApp.mountSync();
   themeParams.mountSync();
-  if (viewport.mount.isAvailable()) {
-    await viewport.mount();
-    viewport.expand();
-  }
 
-  if (viewport.requestFullscreen.isAvailable()) {
-    await viewport.exitFullscreen();
+  // Viewport async calls (mount + fullscreen) use AbortablePromise and wait for
+  // a native bridge response. In the mock (Max or non-Telegram) they never resolve,
+  // so skip them entirely when force-mocking.
+  if (!forceMock) {
+    if (viewport.mount.isAvailable()) {
+      await viewport.mount();
+      viewport.expand();
+    }
+    if (viewport.exitFullscreen.isAvailable()) {
+      await viewport.exitFullscreen();
+    }
   }
 
   miniApp.bindCssVars();

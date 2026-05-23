@@ -8,16 +8,20 @@ import { maxSdkInit } from "./utils/maxSdkInit.ts";
 
 const root = createRoot(document.getElementById("root")!);
 
+const isMax =
+  window.location.pathname.startsWith("/max-miniapp") ||
+  window.location.pathname.startsWith("/max");
+
 const init = async () => {
-  if (window.location.pathname.startsWith("/max-miniapp") ||
-  window.location.pathname.startsWith("/max")
-) {
-    // Max route: load Max SDK, then Telegram mock for shared UI components.
-    // Pass Max themeParams so the mock uses real colors instead of hardcoded defaults.
-    const maxTheme = await maxSdkInit();
-    await sdkInit(maxTheme, true);
-  } else {
-    await sdkInit();
+  try {
+    if (isMax) {
+      const maxTheme = await maxSdkInit();
+      await sdkInit(maxTheme, true);
+    } else {
+      await sdkInit();
+    }
+  } catch (e) {
+    console.error("SDK init failed:", e);
   }
   root.render(<RouterComponent />);
 };
