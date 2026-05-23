@@ -1,27 +1,38 @@
-import { useCallback, useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router';
 
 export const useMaxBackButton = () => {
   const navigate = useNavigate();
+  const navigateRef = useRef(navigate);
+  navigateRef.current = navigate;
+
   const location = useLocation();
-  const handleButtonClick = useCallback(() => {
-    navigate(-1);
-  }, [navigate]);
 
   useEffect(() => {
-    const backButton = window.WebApp?.BackButton;
-    if (!backButton) return;
+    const wa = window.WebApp;
+    if (!wa) return;
 
-    const isRoot = location.pathname === '/max' || location.pathname === '/max/';
+    const isRoot =
+      location.pathname === '/max' || location.pathname === '/max/';
+
     if (isRoot) {
-      backButton.hide();
+      wa.BackButton.hide();
     } else {
-      backButton.show();
+      wa.BackButton.show();
     }
 
-    backButton.onClick(handleButtonClick);
+    // Stable handler — always reads latest navigate via ref
+    const handler = () => navigateRef.current(-1);
+
+    wa.BackButton.onClick(handler);
+
+    // Also listen via the raw event channel as a fallback
+    const eventHandler = () => navigateRef.current(-1);
+    wa.onEvent('backButtonClicked', eventHandler);
+
     return () => {
-      backButton.offClick(handleButtonClick);
+      wa.BackButton.offClick(handler);
+      wa.offEvent('backButtonClicked', eventHandler);
     };
-  }, [location.pathname, handleButtonClick]);
+  }, [location.pathname]);
 };
