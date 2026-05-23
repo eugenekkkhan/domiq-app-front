@@ -12,8 +12,9 @@ export const useMaxBackButton = () => {
     const wa = window.WebApp;
     if (!wa) return;
 
-    const isRoot =
-      location.pathname === '/max' || location.pathname === '/max/';
+    // With BrowserRouter basename set, React Router strips the base —
+    // root is '/' regardless of whether the app is at /max or /max-miniapp
+    const isRoot = location.pathname === '/' || location.pathname === '';
 
     if (isRoot) {
       wa.BackButton.hide();
@@ -21,18 +22,13 @@ export const useMaxBackButton = () => {
       wa.BackButton.show();
     }
 
-    // Stable handler — always reads latest navigate via ref
     const handler = () => navigateRef.current(-1);
-
     wa.BackButton.onClick(handler);
-
-    // Also listen via the raw event channel as a fallback
-    const eventHandler = () => navigateRef.current(-1);
-    wa.onEvent('backButtonClicked', eventHandler);
+    wa.onEvent('backButtonClicked', handler);
 
     return () => {
       wa.BackButton.offClick(handler);
-      wa.offEvent('backButtonClicked', eventHandler);
+      wa.offEvent('backButtonClicked', handler);
     };
   }, [location.pathname]);
 };

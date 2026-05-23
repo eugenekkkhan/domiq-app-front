@@ -15,11 +15,26 @@ import { useMaxBackButton } from "./customHooks/useMaxBackButton";
 import MaxPage from "./pages/MaxPage";
 
 const RouterComponent = () => {
+  const isMax =
+    window.location.pathname.startsWith("/max-miniapp") ||
+    window.location.pathname.startsWith("/max");
+
+  if (isMax) {
+    const basename = window.location.pathname.startsWith("/max-miniapp")
+      ? "/max-miniapp"
+      : "/max";
+    return (
+      <BrowserRouter basename={basename}>
+        <Routes>
+          <Route path="/*" element={<MaxRoutes />} />
+        </Routes>
+      </BrowserRouter>
+    );
+  }
+
   return (
-    <BrowserRouter basename="/max-miniapp">
+    <BrowserRouter>
       <Routes>
-        <Route index element={<MaxPage />} />
-        <Route path="/max/*" element={<MaxRoutes />} />
         <Route path="/*" element={<MainRoutes />} />
       </Routes>
     </BrowserRouter>

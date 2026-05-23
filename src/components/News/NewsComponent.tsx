@@ -21,7 +21,7 @@ const Card = ({
   date?: string;
 }) => {
   return (
-    <NavLink to={"news/" + id}>
+    <NavLink to={"/news/" + id}>
       <div
         style={{
           borderRadius: "26px",
