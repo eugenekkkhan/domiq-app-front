@@ -48,6 +48,9 @@ const MaxRoutes = () => {
     <Routes>
       <Route index element={<MaxPage />} />
       <Route path="news/:articleId" element={<NewArticlePage />} />
+      <Route path="content/:contentId" element={<Content />} />
+      <Route path="videos" element={<Videos />} />
+      <Route path="video/:videoLink" element={<PlayerComponent />} />
     </Routes>
   );
 };
