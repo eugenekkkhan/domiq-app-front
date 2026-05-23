@@ -15,7 +15,7 @@ const init = async () => {
     // Max route: load Max SDK, then Telegram mock for shared UI components.
     // Pass Max themeParams so the mock uses real colors instead of hardcoded defaults.
     const maxTheme = await maxSdkInit();
-    await sdkInit(maxTheme);
+    await sdkInit(maxTheme, true);
   } else {
     await sdkInit();
   }

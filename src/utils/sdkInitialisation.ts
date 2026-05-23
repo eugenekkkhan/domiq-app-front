@@ -28,8 +28,8 @@ const defaultThemeParams = {
   button_text_color: "#ffffff",
 } as const;
 
-export const sdkInit = async (themeOverride?: Record<string, string>) => {
-  if (!(await isTMA("complete"))) {
+export const sdkInit = async (themeOverride?: Record<string, string>, forceMock = false) => {
+  if (forceMock || !isTMA()) {
     const noInsets = {
       left: 0,
       top: 0,
