@@ -29,13 +29,32 @@ const MaxPage = () => {
       <MainMenu />
       <ButtonMain
         Icon={ChatBubbleRoundedIcon}
-        text="Связь с оператором"
+        text="Связь с оператором в Max"
         color="#34C759"
         onClick={() => {
           if (window.WebApp) {
             window.WebApp.openLink('https://max.ru/D0M_IQ');
           } else {
             location.href = 'https://max.ru/D0M_IQ';
+          }
+        }}
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '24px',
+          gap: '8px',
+        }}
+      />
+      <ButtonMain
+        Icon={ChatBubbleRoundedIcon}
+        text="Связь с оператором в Telegram"
+        color="#2AABEE"
+        onClick={() => {
+          if (window.WebApp) {
+            window.WebApp.openLink('https://t.me/D0M_IQ');
+          } else {
+            location.href = 'https://t.me/D0M_IQ';
           }
         }}
         style={{
