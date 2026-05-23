@@ -9,7 +9,9 @@ import { maxSdkInit } from "./utils/maxSdkInit.ts";
 const root = createRoot(document.getElementById("root")!);
 
 const init = async () => {
-  if (window.location.pathname.startsWith("/max")) {
+  if (window.location.pathname.startsWith("/max-miniapp") ||
+  window.location.pathname.startsWith("/max")
+) {
     // Max route: load Max SDK, then Telegram mock for shared UI components.
     // Pass Max themeParams so the mock uses real colors instead of hardcoded defaults.
     const maxTheme = await maxSdkInit();

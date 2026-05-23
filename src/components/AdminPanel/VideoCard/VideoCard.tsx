@@ -17,8 +17,9 @@ const VideoCard = ({ video }: { video: Video }) => {
 
   useEffect(() => {
     getThumbnailFromVideo(video.thumbnail).then((response) => {
+      const contentType = response.headers["content-type"];
       const blob = new Blob([response.data], {
-        type: response.headers["content-type"],
+        type: typeof contentType === "string" ? contentType : undefined,
       });
       const imageUrl = URL.createObjectURL(blob);
       setThumbnail(imageUrl);

@@ -16,8 +16,9 @@ import MaxPage from "./pages/MaxPage";
 
 const RouterComponent = () => {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/max-miniapp">
       <Routes>
+        <Route index element={<MaxPage />} />
         <Route path="/max/*" element={<MaxRoutes />} />
         <Route path="/*" element={<MainRoutes />} />
       </Routes>
