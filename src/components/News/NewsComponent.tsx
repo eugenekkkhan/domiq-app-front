@@ -75,10 +75,10 @@ const Card = ({
                 ) => {
                   e.preventDefault();
                   try {
-                    if ((miniApp as any).openLink?.isAvailable?.()) {
+                    if (window.WebApp?.openLink) {
+                      window.WebApp.openLink(href);
+                    } else if ((miniApp as any).openLink?.isAvailable?.()) {
                       (miniApp as any).openLink(href);
-                    } else if ((window as any).Telegram?.WebApp?.openLink) {
-                      (window as any).Telegram.WebApp.openLink(href);
                     } else {
                       window.open(href, "_blank", "noopener,noreferrer");
                     }
