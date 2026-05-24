@@ -33,9 +33,9 @@ const MaxPage = () => {
         color="#34C759"
         onClick={() => {
           if (window.WebApp) {
-            window.WebApp.openLink('https://max.ru/D0M_IQ');
+            window.WebApp.openLink('https://max.ru/u/f9LHodD0cOJL9Yv6fAZ1IDrmJHG0AFl8iRBJFv0Ja8GruE4jeQrjJmP9txs');
           } else {
-            location.href = 'https://max.ru/D0M_IQ';
+            location.href = 'https://max.ru/u/f9LHodD0cOJL9Yv6fAZ1IDrmJHG0AFl8iRBJFv0Ja8GruE4jeQrjJmP9txs';
           }
         }}
         style={{

@@ -38,7 +38,7 @@ const App = () => {
         text="Связь с оператором в Max"
         color="#34C759"
         onClick={() => {
-          location.href = "https://max.ru/D0M_IQ";
+          location.href = "https://max.ru/u/f9LHodD0cOJL9Yv6fAZ1IDrmJHG0AFl8iRBJFv0Ja8GruE4jeQrjJmP9txs";
         }}
         style={{
           flexDirection: "row",
