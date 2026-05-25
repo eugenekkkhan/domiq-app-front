@@ -100,7 +100,7 @@ const AdminSections = () => {
         {search && (
           <button className="btn btn-secondary" onClick={() => setSearch("")}>Сброс</button>
         )}
-        <AddSection onSaved={load} />
+        {isAdmin() && <AddSection onSaved={load} />}
       </div>
       <AsyncView loading={loading} error={error} onRetry={load}>
         {filtered.length > 0 ? (

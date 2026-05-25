@@ -8,10 +8,19 @@ import { convertTimeStampToDate } from "../../utils/convertTime";
 import { imageUrl } from "../../utils/media";
 import SkeletonImg from "../SkeletonImg/SkeletonImg";
 
+const stripMarkdown = (text: string) =>
+  text
+    .replace(/#{1,6}\s+/g, "")
+    .replace(/\*{1,3}([^*]*)\*{1,3}/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/`[^`]+`/g, "")
+    .replace(/^\s*[-*+]\s+/gm, "")
+    .trim();
+
 const NewsCard = ({ item, fixed }: { item: News; fixed?: boolean }) => (
   <NavLink to={`/news/${item.id}`} className={fixed ? "h-full" : ""}>
     <div
-      className={`card p-6 flex flex-col gap-1 ${fixed ? "h-full justify-between" : "hover:shadow-md transition-shadow"}`}
+      className={`card flex flex-col gap-1 ${fixed ? "h-full justify-between p-4" : "p-6 hover:shadow-md transition-shadow"}`}
     >
       {item.preview_image && !fixed && (
         <SkeletonImg
@@ -26,7 +35,7 @@ const NewsCard = ({ item, fixed }: { item: News; fixed?: boolean }) => (
       <h3 className="font-semibold text-sm leading-snug line-clamp-2">
         {item.title}
       </h3>
-      <p className="text-xs text-gray-500 truncate">{item.short}</p>
+      <p className="text-xs text-gray-500 line-clamp-2">{stripMarkdown(item.short)}</p>
     </div>
   </NavLink>
 );
@@ -60,7 +69,7 @@ const NewsScroll = ({ news }: { news: News[] }) => {
         {news.map((item) => (
           <div
             key={item.id}
-            className="snap-start shrink-0 w-[calc(50%-6px)] h-[116px]"
+            className="snap-start shrink-0 w-[calc(50%-6px)] h-[120px]"
           >
             <NewsCard item={item} fixed />
           </div>
